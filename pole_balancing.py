@@ -14,7 +14,7 @@ class PoleBalancing():
         self.length = 0.5  # m
         self.mass_p = 0.1  # kg
         self.mass_c = 1  # kg
-        self.gravity = 9.81  # m/s^2
+        self.gravity = 9.8  # m/s^2
         self.force = 10  # N
         self.max_angle = 0.21  # radians
         self.max_x_pos = 2.4  # m
@@ -66,14 +66,14 @@ class PoleBalancing():
         if not self.cart_exited:
             if np.abs(self.x_pos) > self.max_x_pos:
                 self.cart_exited = True
+        return 1  # Reward
 
-    def get_child_state(self, action: bool):
+    def get_child_state(self, action: bool, rounded=False):
         """
         Returns the child state if given action is performed.
         """
         # Set the bangbang-force, either positive or negative F
         bb_force = [-self.force, self.force][action]
-        bb_force = 0
         # Calculate double derivatives
         angle_acc = self.update_angle_acc(bb_force)
         x_acc = self.update_x_acc(bb_force, angle_acc)
@@ -82,6 +82,10 @@ class PoleBalancing():
         x_vel = self.x_vel + self.tau * x_acc
         angle = self.angle + self.tau * self.angle_vel
         angle_vel = self.angle_vel + self.tau * angle_acc
+        if rounded:
+            return round(x_pos, 2), round(x_vel,
+                                          2), round(angle,
+                                                    2), round(angle_vel, 2)
         return x_pos, x_vel, angle, angle_vel
 
     def update_angle_acc(self, bb_force):
@@ -112,7 +116,10 @@ class PoleBalancing():
         """
         Returns the current state of the sim world.
         """
-        return self.x_pos, self.x_vel, self.angle, self.angle_vel
+        return round(self.x_pos,
+                     2), round(self.x_vel,
+                               2), round(self.angle,
+                                         2), round(self.angle_vel, 2)
 
     def is_current_state_final_state(self):
         """
@@ -133,7 +140,7 @@ class PoleBalancing():
         """
         return False, True
 
-    def get_child_states(self):
+    def get_child_states(self, rounded=True):
         """
         Returns the child states from the current state as a dictionary where
         the key is a possible action and the corresponding value is the
@@ -141,7 +148,8 @@ class PoleBalancing():
         """
         child_states = {}
         for legal_action in self.get_legal_actions():
-            child_states[legal_action] = self.get_child_state(legal_action)
+            child_states[legal_action] = self.get_child_state(
+                legal_action, rounded)
         return child_states
 
     def __str__(self):
@@ -155,9 +163,9 @@ class PoleBalancing():
 
 if __name__ == "__main__":
     pole = PoleBalancing()
-    # for _ in range(10):
-    #     pole.update(False)
-    #     print(str(pole))
-    pole.update(False)
-    print(str(pole))
-    print(pole.get_child_states())
+    for _ in range(10):
+        pole.update(False)
+        print(str(pole))
+    # pole.update(False)
+    # print(str(pole))
+    # print(pole.get_child_states())

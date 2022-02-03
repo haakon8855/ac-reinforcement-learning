@@ -6,6 +6,9 @@ __pycache__/
 # vscode
 .vscode/
 
+# Private notes
+notes
+
 # C extensions
 *.so
 

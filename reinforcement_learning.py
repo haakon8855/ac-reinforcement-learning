@@ -32,6 +32,12 @@ class ReinforcementLearning():
         self.actor = Actor()
         self.sim_world = SimWorld()
 
+    def train(self):
+        """
+        Runs through episodes in order to train the basic RL model.
+        """
+        # TODO: Do stuff here
+
     def one_episode(self):
         """
         Does one episode.
@@ -86,6 +92,10 @@ class ReinforcementLearning():
             # 7.
             state = new_state
             action = proposed_action
+            # 8. Check if state is final or failed state
+            if (self.sim_world.is_current_state_failed_state()
+                    or self.sim_world.is_current_state_final_state()):
+                end_state = True
 
     def get_action(self, state):
         """
@@ -99,3 +109,4 @@ class ReinforcementLearning():
 
 if __name__ == "__main__":
     rl = ReinforcementLearning()
+    rl.one_episode()

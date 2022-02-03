@@ -10,7 +10,7 @@ class Critic():
     on its actions.
     """
     def __init__(self, drate):
-        self.state_value = defaultdict(Critic.dict_default_value())
+        self.state_value = defaultdict(Critic.default_state_value)
         self.state_eligibility = defaultdict(lambda: 0)
         self.drate = drate
 
@@ -52,7 +52,7 @@ class Critic():
         self.state_eligibility = defaultdict(lambda: 0)
 
     @staticmethod
-    def dict_default_value():
+    def default_state_value():
         """
         Returns the default value of a dictionary object that has not been
         accessed yet.

@@ -58,7 +58,7 @@ class Actor():
         for action in possible_actions:
             state_action_pair = (*state, action)
             state_action_value = self.get_state_action_value(state_action_pair)
-            if best_state_action_value < state_action_pair:
+            if best_state_action_value < state_action_value:
                 best_action = action
                 best_state_action_value = state_action_value
         return best_action

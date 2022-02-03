@@ -66,6 +66,8 @@ class PoleBalancing():
         if not self.cart_exited:
             if np.abs(self.x_pos) > self.max_x_pos:
                 self.cart_exited = True
+        if self.is_current_state_failed_state():
+            return -10
         return 1  # Reward
 
     def get_child_state(self, action: bool, rounded=False):
@@ -131,6 +133,14 @@ class PoleBalancing():
         """
         return (self.current_step >= self.steps) and (
             not self.cart_exited) and (not self.balancing_failed)
+
+    def is_current_state_failed_state(self):
+        """
+        Returns whether the current state is a failed state or not.
+        Returns True if the cart has previously exited the area or the pole's
+        angle has previously went over its permitted maximum angle.
+        """
+        return self.cart_exited or self.balancing_failed
 
     def get_legal_actions(self):
         """

@@ -62,8 +62,3 @@ class Actor():
                 best_action = action
                 best_state_action_value = state_action_value
         return best_action
-
-    def one_episode(self):
-        """
-        Runs one episode
-        """

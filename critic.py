@@ -58,8 +58,3 @@ class Critic():
         accessed yet.
         """
         return random() * 0.5
-
-    def one_episode(self):
-        """
-        Runs one episode
-        """

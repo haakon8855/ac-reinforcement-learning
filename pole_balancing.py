@@ -73,8 +73,10 @@ class PoleBalancing():
             if np.abs(self.x_pos) > self.max_x_pos:
                 self.cart_exited = True
         if self.is_current_state_failed_state():
-            return -100
-        return 1  # Reward
+            return -10000000
+        reward = 1 + (self.max_angle - abs(self.angle)) * 10 + (
+            self.max_x_pos - abs(self.x_pos))
+        return reward
 
     def get_child_state(self, action: bool, rounded=False):
         """

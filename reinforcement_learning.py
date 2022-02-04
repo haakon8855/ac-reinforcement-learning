@@ -1,10 +1,10 @@
 """Haakoas"""
 
 import random
+from time import time
 
 from critic import Critic
 from actor import Actor
-from time import time
 from pole_balancing import PoleBalancing as SimWorld
 
 
@@ -18,13 +18,14 @@ class ReinforcementLearning():
                  max_steps=300,
                  table_critic=True,
                  epsilon=0.5,
-                 lrate=0.1,
+                 lrate=0.3,
                  trace_decay=0.5,
                  drate=0.99):
         self.episodes = episodes
         self.max_steps = max_steps
         self.table_critic = table_critic
         self.epsilon = epsilon
+        self.epsilon_d = epsilon / 10
         self.lrate = lrate  # alpha
         self.drate = drate  # gamma
         self.trace_decay = trace_decay  # lambda
@@ -43,7 +44,8 @@ class ReinforcementLearning():
             for _ in range(self.episodes // 10):
                 self.one_episode()
                 self.sim_world.store_game_length()
-            print(j)
+            print(j, end="")
+            self.epsilon /= j + 1
         end_time = time()
 
         print(f"Time spent training: {end_time-start_time}")
@@ -51,9 +53,9 @@ class ReinforcementLearning():
 
         # Set epsilon to 0 for actual gameplay without exploration
         self.epsilon = 0
-        # for _ in range(10):
-        #     self.one_episode()
-        #     self.sim_world.plot_historic_angle()
+        for _ in range(10):
+            self.one_episode()
+            self.sim_world.plot_historic_angle()
 
     def one_episode(self):
         """

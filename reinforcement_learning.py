@@ -14,11 +14,11 @@ class ReinforcementLearning():
     communication between actor-critic and the sim-world.
     """
     def __init__(self,
-                 episodes=1000,
+                 episodes=300,
                  max_steps=300,
                  table_critic=True,
                  epsilon=0.5,
-                 lrate=0.3,
+                 lrate=0.05,
                  trace_decay=0.5,
                  drate=0.99):
         self.episodes = episodes
@@ -41,11 +41,12 @@ class ReinforcementLearning():
         start_time = time()
         # Run for self.episodes number of times, printing progress every 10%
         for j in range(10):
+            self.epsilon -= self.epsilon_d
             for _ in range(self.episodes // 10):
                 self.one_episode()
                 self.sim_world.store_game_length()
             print(j, end="")
-            self.epsilon /= j + 1
+            # self.epsilon /= j + 1
         end_time = time()
 
         print(f"Time spent training: {end_time-start_time}")
@@ -64,6 +65,9 @@ class ReinforcementLearning():
         history = []
         state = self.sim_world.produce_initial_state()
         action = self.get_action(state)
+        # Reset eligibility
+        self.actor.initiate_eligibility()
+        self.critic.initiate_eligibility()
         # For each step of the episode:
         end_state = False
         while not end_state:

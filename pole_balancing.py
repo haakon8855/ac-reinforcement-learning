@@ -67,15 +67,16 @@ class PoleBalancing():
 
         # Update state values with the newly updated ones
         if not self.balancing_failed:
-            if np.abs(self.angle) > self.max_angle:
+            if np.abs(self.angle) >= self.max_angle:
                 self.balancing_failed = True
         if not self.cart_exited:
-            if np.abs(self.x_pos) > self.max_x_pos:
+            if np.abs(self.x_pos) >= self.max_x_pos:
                 self.cart_exited = True
         if self.is_current_state_failed_state():
-            return -10000000
-        reward = 1 + (self.max_angle - abs(self.angle)) * 10 + (
-            self.max_x_pos - abs(self.x_pos))
+            return -1000
+        # reward = 1 + (self.max_angle - abs(self.angle)) * 10 + (
+        #     self.max_x_pos - abs(self.x_pos)) * 1
+        reward = 1
         return reward
 
     def get_child_state(self, action: bool, rounded=False):
@@ -200,9 +201,11 @@ class PoleBalancing():
         Rounds the state variables and returns the result
         state = x_pos, x_vel, angle, angle_vel
         """
-        return (round(state[0], 1), round(state[1],
-                                          1), round(state[2],
-                                                    1), round(state[3], 1))
+        # return (round(state[0], 1), round(state[1],
+        #                                   1), round(state[2],
+        #                                             2), round(state[3], 1))
+        return (np.sign(state[0]), round(state[1]), np.sign(state[2]),
+                round(state[3]))
 
 
 if __name__ == "__main__":

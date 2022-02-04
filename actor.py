@@ -53,12 +53,14 @@ class Actor():
             return random.choice(possible_actions)
         # best_action = possible_actions[0]
         # best_state_action_value = self.actor.get_state_action_value((*state, best_action))
-        best_action = None
+        best_action = []
         best_state_action_value = float('-inf')
         for action in possible_actions:
             state_action_pair = (*state, action)
             state_action_value = self.get_state_action_value(state_action_pair)
-            if best_state_action_value < state_action_value:
-                best_action = action
+            if state_action_value > best_state_action_value:
+                best_action = [action]
                 best_state_action_value = state_action_value
-        return best_action
+            elif best_state_action_value == state_action_value:
+                best_action.append(action)
+        return random.choice(best_action)

@@ -2,6 +2,7 @@
 
 from random import uniform
 import numpy as np
+from matplotlib import pyplot as plt
 
 
 class PoleBalancing():
@@ -28,6 +29,8 @@ class PoleBalancing():
         self.current_step = 0
         self.balancing_failed = False
         self.cart_exited = False
+        self.historic_angle = []
+        self.historic_game_length = []
         self.produce_initial_state()
 
     def produce_initial_state(self):
@@ -44,6 +47,7 @@ class PoleBalancing():
         self.current_step = 0
         self.balancing_failed = False
         self.cart_exited = False
+        self.historic_angle = [self.angle]
         return self.get_current_state()
 
     def update(self, action: bool):
@@ -59,6 +63,8 @@ class PoleBalancing():
         self.angle = next_state[2]
         self.angle_vel = next_state[3]
 
+        self.historic_angle.append(self.angle)
+
         # Update state values with the newly updated ones
         if not self.balancing_failed:
             if np.abs(self.angle) > self.max_angle:
@@ -67,7 +73,7 @@ class PoleBalancing():
             if np.abs(self.x_pos) > self.max_x_pos:
                 self.cart_exited = True
         if self.is_current_state_failed_state():
-            return -10
+            return -100
         return 1  # Reward
 
     def get_child_state(self, action: bool, rounded=False):
@@ -85,9 +91,7 @@ class PoleBalancing():
         angle = self.angle + self.tau * self.angle_vel
         angle_vel = self.angle_vel + self.tau * angle_acc
         if rounded:
-            return round(x_pos, 2), round(x_vel,
-                                          2), round(angle,
-                                                    2), round(angle_vel, 2)
+            return PoleBalancing.round_state((x_pos, x_vel, angle, angle_vel))
         return x_pos, x_vel, angle, angle_vel
 
     def update_angle_acc(self, bb_force):
@@ -118,10 +122,8 @@ class PoleBalancing():
         """
         Returns the current state of the sim world.
         """
-        return round(self.x_pos,
-                     2), round(self.x_vel,
-                               2), round(self.angle,
-                                         2), round(self.angle_vel, 2)
+        return PoleBalancing.round_state(
+            (self.x_pos, self.x_vel, self.angle, self.angle_vel))
 
     def is_current_state_final_state(self):
         """
@@ -162,6 +164,26 @@ class PoleBalancing():
                 legal_action, rounded)
         return child_states
 
+    def plot_historic_angle(self):
+        """
+        Plots the historic angle of the pole.
+        """
+        plt.plot(self.historic_angle)
+        plt.show()
+
+    def plot_historic_game_length(self):
+        """
+        Plots the historic number of steps for each game.
+        """
+        plt.plot(self.historic_game_length)
+        plt.show()
+
+    def store_game_length(self):
+        """
+        Stores the game length in a list to plot later.
+        """
+        self.historic_game_length.append(self.current_step)
+
     def __str__(self):
         outstring = ""
         outstring += f"\nx_pos: {self.x_pos}"
@@ -169,6 +191,16 @@ class PoleBalancing():
         outstring += f"\nangle: {self.angle}"
         outstring += f"\nangle_vel: {self.angle_vel}"
         return outstring
+
+    @staticmethod
+    def round_state(state):
+        """
+        Rounds the state variables and returns the result
+        state = x_pos, x_vel, angle, angle_vel
+        """
+        return (round(state[0], 1), round(state[1],
+                                          1), round(state[2],
+                                                    1), round(state[3], 1))
 
 
 if __name__ == "__main__":

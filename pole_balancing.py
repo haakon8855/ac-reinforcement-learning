@@ -167,7 +167,7 @@ class PoleBalancing():
                 legal_action, rounded)
         return child_states
 
-    def plot_historic_angle(self):
+    def plot_history(self):
         """
         Plots the historic angle of the pole.
         """
@@ -213,6 +213,3 @@ if __name__ == "__main__":
     for _ in range(10):
         pole.update(False)
         print(str(pole))
-    # pole.update(False)
-    # print(str(pole))
-    # print(pole.get_child_states())

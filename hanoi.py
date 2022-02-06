@@ -83,7 +83,7 @@ class Hanoi():
         """
         Returns the current state of the sim world.
         """
-        return self.state
+        return (*self.state, )
 
     def is_current_state_final_state(self):
         """
@@ -109,7 +109,7 @@ class Hanoi():
         """
         legal_actions = []
         for i in range(len(self.possible_actions)):
-            if self.action_is_legal(self.possible_actions[i]):
+            if self.action_is_legal(i):
                 legal_actions.append(i)
         return legal_actions
 
@@ -119,9 +119,9 @@ class Hanoi():
         current state.
         """
         for i in range(len(self.state) - 1, -1, -1):
-            if self.state[i] == action[1]:
+            if self.state[i] == self.possible_actions[action][1]:
                 return False
-            if self.state[i] == action[0]:
+            if self.state[i] == self.possible_actions[action][0]:
                 return True
 
     def get_child_states(self):

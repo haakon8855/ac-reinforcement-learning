@@ -5,7 +5,6 @@ from time import time
 
 from critic import Critic
 from actor import Actor
-from pole_balancing import PoleBalancing as SimWorld
 
 
 class ReinforcementLearning():
@@ -13,14 +12,8 @@ class ReinforcementLearning():
     Reinforcement learning class for handling general practicalities and
     communication between actor-critic and the sim-world.
     """
-    def __init__(self,
-                 episodes=300,
-                 max_steps=300,
-                 table_critic=True,
-                 epsilon=0.5,
-                 lrate=0.05,
-                 trace_decay=0.5,
-                 drate=0.99):
+    def __init__(self, sim_world, episodes, max_steps, table_critic, epsilon,
+                 lrate, trace_decay, drate):
         self.episodes = episodes
         self.max_steps = max_steps
         self.table_critic = table_critic
@@ -32,7 +25,7 @@ class ReinforcementLearning():
         # Initialize critic, actor and sim world
         self.critic = Critic(drate=drate)
         self.actor = Actor()
-        self.sim_world = SimWorld()
+        self.sim_world = sim_world
 
     def train(self):
         """
@@ -56,7 +49,7 @@ class ReinforcementLearning():
         self.epsilon = 0
         for _ in range(10):
             self.one_episode()
-            self.sim_world.plot_historic_angle()
+            self.sim_world.plot_history()
 
     def one_episode(self):
         """
@@ -128,9 +121,3 @@ class ReinforcementLearning():
         possible_actions = self.sim_world.get_legal_actions()
         return self.actor.get_proposed_action(do_argmax, state,
                                               possible_actions)
-
-
-if __name__ == "__main__":
-    rl = ReinforcementLearning()
-    # rl.one_episode()
-    rl.train()

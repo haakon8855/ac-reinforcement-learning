@@ -155,18 +155,6 @@ class PoleBalancing():
         """
         return False, True
 
-    def get_child_states(self, rounded=True):
-        """
-        Returns the child states from the current state as a dictionary where
-        the key is a possible action and the corresponding value is the
-        resulting state from that action.
-        """
-        child_states = {}
-        for legal_action in self.get_legal_actions():
-            child_states[legal_action] = self.get_child_state(
-                legal_action, rounded)
-        return child_states
-
     def plot_history(self):
         """
         Plots the historic angle of the pole.

@@ -4,6 +4,7 @@ from configuration import Config
 from reinforcement_learning import ReinforcementLearning
 from pole_balancing import PoleBalancing
 from hanoi import Hanoi
+from gambler import Gambler
 
 
 class GPRLSystem:
@@ -28,6 +29,9 @@ class GPRLSystem:
             num_pegs = int(conf_globals['num_pegs'])
             num_discs = int(conf_globals['num_discs'])
             self.sim_world = Hanoi(num_pegs=num_pegs, num_discs=num_discs)
+        elif self.problem == 'gambler':
+            win_prob = float(conf_globals['win_prob'])
+            self.sim_world = Gambler(win_prob=win_prob)
 
         self.reinforcement_learner = ReinforcementLearning(
             self.sim_world, self.episodes, self.max_steps, self.table_critic,
@@ -42,5 +46,6 @@ class GPRLSystem:
 
 if __name__ == "__main__":
     # gprl = GPRLSystem("config_pole.ini")
-    gprl = GPRLSystem("config_hanoi.ini")
+    # gprl = GPRLSystem("config_hanoi.ini")
+    gprl = GPRLSystem("config_gambler.ini")
     gprl.run()

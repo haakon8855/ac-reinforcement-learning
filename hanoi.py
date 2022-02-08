@@ -107,6 +107,8 @@ class Hanoi:
         Returns a list of legal actions in the current state. The action (int)
         is an index mapping to the list of all possible moves.
         """
+        if state is None:
+            state = self.state
         legal_actions = []
         for i in range(len(self.possible_actions)):
             if self.action_is_legal(i):

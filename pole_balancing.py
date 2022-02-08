@@ -153,6 +153,8 @@ class PoleBalancing():
         represents whether the cart will be pushed to the right or not. If True
         it will be pushed to the right, if False it will be pushed to the left.
         """
+        if state is None:
+            pass
         return False, True
 
     def plot_history(self):

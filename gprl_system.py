@@ -1,4 +1,4 @@
-"""Haakoas"""
+"""haakon8855"""
 
 from configuration import Config
 from reinforcement_learning import ReinforcementLearning

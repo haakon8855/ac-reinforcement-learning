@@ -1,4 +1,4 @@
-"""Haakoas"""
+"""haakon8855"""
 
 from collections import defaultdict
 from random import random

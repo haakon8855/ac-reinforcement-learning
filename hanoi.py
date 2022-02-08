@@ -1,4 +1,4 @@
-"""Haakoas"""
+"""haakon8855"""
 
 from matplotlib import pyplot as plt
 

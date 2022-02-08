@@ -4,7 +4,7 @@ import random
 from collections import defaultdict
 
 
-class Actor():
+class Actor:
     """
     Actor class for making actions in a simulated world.
     """

@@ -3,7 +3,7 @@
 from matplotlib import pyplot as plt
 
 
-class Hanoi():
+class Hanoi:
     """
     Hanoi class for holding the simulated world of 'Towers of Hanoi'.
     """

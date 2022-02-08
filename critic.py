@@ -4,7 +4,7 @@ from collections import defaultdict
 from random import random
 
 
-class Critic():
+class Critic:
     """
     Critic class for housing the critic which will give feedback to the actor
     on its actions.

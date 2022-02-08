@@ -6,7 +6,7 @@ from pole_balancing import PoleBalancing
 from hanoi import Hanoi
 
 
-class GPRLSystem():
+class GPRLSystem:
     """
     General purpose reinforcement learning system
     """

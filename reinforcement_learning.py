@@ -7,7 +7,7 @@ from critic import Critic
 from actor import Actor
 
 
-class ReinforcementLearning():
+class ReinforcementLearning:
     """
     Reinforcement learning class for handling general practicalities and
     communication between actor-critic and the sim-world.

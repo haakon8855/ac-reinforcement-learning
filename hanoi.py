@@ -102,7 +102,7 @@ class Hanoi:
         """
         return self.failed
 
-    def get_legal_actions(self):
+    def get_legal_actions(self, state=None):
         """
         Returns a list of legal actions in the current state. The action (int)
         is an index mapping to the list of all possible moves.
@@ -158,3 +158,4 @@ if __name__ == "__main__":
     print(hanoi.get_legal_actions())
     # pole.update(False)
     # print(str(pole))
+    # print(pole.get_child_states())

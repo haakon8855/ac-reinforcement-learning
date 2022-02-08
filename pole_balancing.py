@@ -147,7 +147,7 @@ class PoleBalancing():
         """
         return self.cart_exited or self.balancing_failed
 
-    def get_legal_actions(self):
+    def get_legal_actions(self, state=None):
         """
         Returns the legal actions from the current state. The action (boolean)
         represents whether the cart will be pushed to the right or not. If True

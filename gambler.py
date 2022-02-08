@@ -97,13 +97,17 @@ class Gambler:
         """
         return self.failed
 
-    def get_legal_actions(self):
+    def get_legal_actions(self, state=None):
         """
         Returns a list of legal actions in the current state. The action (int)
         represents the number of coins to wager.
         """
-        dist_to_win = self.max_coins - self.state
-        dist_to_lose = self.state
+        if state is None:
+            state = self.state
+        else:
+            state = state[0]
+        dist_to_win = self.max_coins - state
+        dist_to_lose = state
         max_bet = min(dist_to_lose, dist_to_win)
         return [self.min_bet] + list(range(self.min_bet + 1, max_bet + 1))
 

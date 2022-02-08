@@ -118,6 +118,6 @@ class ReinforcementLearning:
         Returns an action given a state by consulting the actor
         """
         do_argmax = random.random() > self.epsilon
-        possible_actions = self.sim_world.get_legal_actions()
+        possible_actions = self.sim_world.get_legal_actions(state)
         return self.actor.get_proposed_action(do_argmax, state,
                                               possible_actions)

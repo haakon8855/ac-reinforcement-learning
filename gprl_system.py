@@ -1,5 +1,7 @@
 """haakon8855"""
 
+from matplotlib import pyplot as plt
+
 from configuration import Config
 from reinforcement_learning import ReinforcementLearning
 from pole_balancing import PoleBalancing
@@ -37,11 +39,35 @@ class GPRLSystem:
             self.sim_world, self.episodes, self.max_steps, self.table_critic,
             self.epsilon, self.lrate, self.trace_decay, self.drate)
 
+        if self.problem == 'gambler':
+            self.before = True
+            self.visualize_gambler_policy()
+
     def run(self):
         """
         Runs the reinforcement learning system on the specified problem/simworld
         """
         self.reinforcement_learner.train()
+        if self.problem == 'gambler':
+            self.visualize_gambler_policy()
+
+    def visualize_gambler_policy(self):
+        """
+        Visualizes the policy for the gambler simworld.
+        """
+        min_state = 1
+        max_state = self.sim_world.max_coins
+        states = list(range(min_state, max_state))
+        wagers = []
+        for state in states:
+            wagers.append(self.reinforcement_learner.get_action((state, )))
+        plt.plot(states, wagers)
+        if self.before:
+            plt.savefig('plots/before.png')
+            self.before = False
+        else:
+            plt.savefig('plots/after.png')
+        plt.clf()
 
 
 if __name__ == "__main__":

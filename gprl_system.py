@@ -71,7 +71,7 @@ class GPRLSystem:
 
 
 if __name__ == "__main__":
-    # gprl = GPRLSystem("config_pole.ini")
-    # gprl = GPRLSystem("config_hanoi.ini")
-    gprl = GPRLSystem("config_gambler.ini")
+    gprl = GPRLSystem("configs/config_pole.ini")
+    # gprl = GPRLSystem("configs/config_hanoi.ini")
+    # gprl = GPRLSystem("configs/config_gambler.ini")
     gprl.run()

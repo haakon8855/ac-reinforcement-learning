@@ -25,7 +25,9 @@ class GPRLSystem:
         if self.problem == 'cartpole':
             self.sim_world = PoleBalancing()
         elif self.problem == 'hanoi':
-            self.sim_world = Hanoi()
+            num_pegs = int(conf_globals['num_pegs'])
+            num_discs = int(conf_globals['num_discs'])
+            self.sim_world = Hanoi(num_pegs=num_pegs, num_discs=num_discs)
 
         self.reinforcement_learner = ReinforcementLearning(
             self.sim_world, self.episodes, self.max_steps, self.table_critic,

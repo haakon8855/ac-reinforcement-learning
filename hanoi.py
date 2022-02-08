@@ -139,9 +139,7 @@ class Hanoi:
         """
         Plots the course of the current game up until current state.
         """
-        # TODO: Not working
-        plt.plot(self.history)
-        plt.show()
+        # TODO: Do
 
     def plot_historic_game_length(self):
         """

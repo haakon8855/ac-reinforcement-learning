@@ -91,8 +91,8 @@ class Hanoi:
         Returns whether the current state is a final state.
         Returns True if all blocks are on the rightmost pole.
         """
-        for i in range(len(self.state)):
-            if self.state[i] != self.num_pegs - 1:
+        for disc in self.state:
+            if disc != self.num_pegs - 1:
                 return False
         return True
 

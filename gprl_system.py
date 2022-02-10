@@ -13,6 +13,7 @@ class GPRLSystem:
     """
     General purpose reinforcement learning system
     """
+
     def __init__(self, config_file: str):
         self.config = Config.get_config(config_file)
         conf_globals = self.config['GLOBALS']

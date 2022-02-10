@@ -7,6 +7,7 @@ class Config:
     """
     Fetches the config from a file and returns it in json/py-dict format.
     """
+
     @staticmethod
     def get_config(config_file: str):
         """

@@ -7,6 +7,7 @@ class Hanoi:
     """
     Hanoi class for holding the simulated world of 'Towers of Hanoi'.
     """
+
     def __init__(self, num_pegs=3, num_discs=3):
         # Constants:
         self.num_pegs = num_pegs

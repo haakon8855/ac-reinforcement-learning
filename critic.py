@@ -9,6 +9,7 @@ class Critic:
     Critic class for housing the critic which will give feedback to the actor
     on its actions.
     """
+
     def __init__(self, drate):
         self.state_value = defaultdict(Critic.default_state_value)
         self.state_eligibility = defaultdict(lambda: 0)

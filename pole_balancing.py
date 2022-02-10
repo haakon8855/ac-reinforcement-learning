@@ -10,6 +10,7 @@ class PoleBalancing():
     PoleBalancing class for holding the simulated world for balancing a pole
     on a cart.
     """
+
     def __init__(self):
         # Constants:
         self.length = 0.5  # m

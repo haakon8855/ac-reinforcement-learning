@@ -8,6 +8,7 @@ class Actor:
     """
     Actor class for making actions in a simulated world.
     """
+
     def __init__(self):
         self.policy = defaultdict(lambda: 0)
         self.state_action_eligibility = defaultdict(lambda: 0)

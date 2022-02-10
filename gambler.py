@@ -8,6 +8,7 @@ class Gambler:
     """
     Gambler class for holding the simulated world of the gambler.
     """
+
     def __init__(self, win_prob=0.4):
         # Constants:
         self.max_coins = 100

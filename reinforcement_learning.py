@@ -12,6 +12,7 @@ class ReinforcementLearning:
     Reinforcement learning class for handling general practicalities and
     communication between actor-critic and the sim-world.
     """
+
     def __init__(self, sim_world, episodes, max_steps, table_critic, epsilon,
                  lrate, trace_decay, drate):
         self.episodes = episodes

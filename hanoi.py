@@ -88,25 +88,6 @@ class Hanoi:
         # return (*self.state, )
         return tuple(oh_state)
 
-    @staticmethod
-    def one_hot_state(state, num_pegs):
-        """
-        Returns the one-hot encoding of the state representatinon given.
-        """
-        oh_state = []
-        for pos in state:
-            oh_state += Hanoi.one_hot_variable(pos, num_pegs)
-        return oh_state
-
-    @staticmethod
-    def one_hot_variable(disc_pos: int, num_pegs: int):
-        """
-        Returns the one-hot encoding of one rounded state variable
-        """
-        vector = [0] * (num_pegs)
-        vector[disc_pos] = 1
-        return vector
-
     def is_current_state_final_state(self):
         """
         Returns whether the current state is a final state.
@@ -170,6 +151,25 @@ class Hanoi:
     def __str__(self):
         outstring = f"state: {self.state}"
         return outstring
+
+    @staticmethod
+    def one_hot_state(state, num_pegs):
+        """
+        Returns the one-hot encoding of the state representatinon given.
+        """
+        oh_state = []
+        for pos in state:
+            oh_state += Hanoi.one_hot_variable(pos, num_pegs)
+        return oh_state
+
+    @staticmethod
+    def one_hot_variable(disc_pos: int, num_pegs: int):
+        """
+        Returns the one-hot encoding of one rounded state variable
+        """
+        vector = [0] * (num_pegs)
+        vector[disc_pos] = 1
+        return vector
 
 
 if __name__ == "__main__":

@@ -1,6 +1,7 @@
 """haakon8855"""
 
 from matplotlib import pyplot as plt
+import numpy as np
 
 from configuration import Config
 from reinforcement_learning import ReinforcementLearning
@@ -58,11 +59,12 @@ class GPRLSystem:
         """
         min_state = 1
         max_state = self.sim_world.max_coins
-        states = list(range(min_state, max_state))
+        states_xaxis = list(range(min_state, max_state))
+        states = np.eye(max_state + 1, dtype=int)[1:-1]
         wagers = []
         for state in states:
-            wagers.append(self.reinforcement_learner.get_action((state, )))
-        plt.plot(states, wagers)
+            wagers.append(self.reinforcement_learner.get_action(tuple(state)))
+        plt.plot(states_xaxis, wagers)
         if self.before:
             plt.savefig('plots/before.png')
             self.before = False
@@ -72,7 +74,7 @@ class GPRLSystem:
 
 
 if __name__ == "__main__":
-    gprl = GPRLSystem("configs/config_pole.ini")
+    # gprl = GPRLSystem("configs/config_pole.ini")
     # gprl = GPRLSystem("configs/config_hanoi.ini")
-    # gprl = GPRLSystem("configs/config_gambler.ini")
+    gprl = GPRLSystem("configs/config_gambler.ini")
     gprl.run()

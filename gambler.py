@@ -81,6 +81,9 @@ class Gambler:
         """
         Returns the current state of the sim world.
         """
+        oh_state = [0] * (self.max_coins + 1)
+        oh_state[self.state] = 1
+        return tuple(oh_state)
         return (self.state, )
 
     def is_current_state_final_state(self):
@@ -106,7 +109,7 @@ class Gambler:
         if state is None:
             state = self.state
         else:
-            state = state[0]
+            state = state.index(1)
         dist_to_win = self.max_coins - state
         dist_to_lose = state
         max_bet = min(dist_to_lose, dist_to_win)

@@ -9,9 +9,12 @@ class Actor:
     Actor class for making actions in a simulated world.
     """
 
-    def __init__(self):
+    def __init__(self, lrate, drate, trace_decay):
         self.policy = defaultdict(lambda: 0)
         self.state_action_eligibility = defaultdict(lambda: 0)
+        self.lrate = lrate
+        self.drate = drate
+        self.trace_decay = trace_decay
 
     def initiate_eligibility(self):
         """
@@ -42,6 +45,27 @@ class Actor:
         Returns the value of the state and action pair.
         """
         self.policy[state_action_pair] = value
+
+    def update_state_action_value(self, state_action_pair, td_error):
+        """
+        Updates the state action evaluation given a state action pair
+        and td_error.
+        """
+        new_state_action_value = self.get_state_action_value(
+            state_action_pair
+        ) + self.lrate * td_error * self.get_state_action_eligibility(
+            state_action_pair)
+        self.set_state_action_value(state_action_pair, new_state_action_value)
+
+    def update_state_action_eligibility(self, state_action_pair):
+        """
+        Updates the state action eligibility given a state action pair.
+        """
+        new_state_action_eligibility = (
+            self.drate * self.trace_decay *
+            self.get_state_action_eligibility(state_action_pair))
+        self.set_state_action_eligibility(state_action_pair,
+                                          new_state_action_eligibility)
 
     def get_proposed_action(self, do_argmax, state, possible_actions):
         """

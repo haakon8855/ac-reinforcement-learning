@@ -24,8 +24,8 @@ class ReinforcementLearning:
         self.drate = drate  # gamma
         self.trace_decay = trace_decay  # lambda
         # Initialize critic, actor and sim world
-        self.critic = Critic(drate=drate)
-        self.actor = Actor()
+        self.critic = Critic(lrate, drate, trace_decay)
+        self.actor = Actor(lrate, drate, trace_decay)
         self.sim_world = sim_world
 
     def train(self):
@@ -82,30 +82,11 @@ class ReinforcementLearning:
             for state_action_pair in history:
                 state = state_action_pair[:-1]
                 action = state_action_pair[-1]
-                # a
-                new_state_value = self.critic.get_state_value(
-                    state
-                ) + self.lrate * td_error * self.critic.get_state_eligibility(
-                    state)
-                self.critic.set_state_value(state, new_state_value)
-                # b
-                new_state_eligibility = (
-                    self.drate * self.trace_decay *
-                    self.critic.get_state_eligibility(state))
-                self.critic.set_state_eligibility(state, new_state_eligibility)
-                # c
-                new_state_action_value = self.actor.get_state_action_value(
-                    state_action_pair
-                ) + self.lrate * td_error * self.actor.get_state_action_eligibility(
-                    state_action_pair)
-                self.actor.set_state_action_value(state_action_pair,
-                                                  new_state_action_value)
-                # d
-                new_state_action_eligibility = (
-                    self.drate * self.trace_decay *
-                    self.actor.get_state_action_eligibility(state_action_pair))
-                self.actor.set_state_action_eligibility(
-                    state_action_pair, new_state_action_eligibility)
+                self.critic.update_state_value(state, td_error)
+                self.critic.update_state_eligibility(state)
+                self.actor.update_state_action_value(state_action_pair,
+                                                     td_error)
+                self.actor.update_state_action_eligibility(state_action_pair)
             # 7.
             state = new_state
             action = proposed_action

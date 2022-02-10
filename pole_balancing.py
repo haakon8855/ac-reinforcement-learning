@@ -195,12 +195,41 @@ class PoleBalancing():
         # return (round(state[0], 1), round(state[1],
         #                                   1), round(state[2],
         #                                             2), round(state[3], 1))
-        return (np.sign(state[0]), round(state[1]), np.sign(state[2]),
-                round(state[3]))
+        state_oh = PoleBalancing.one_hot_state(
+            (np.sign(state[0]), round(state[1]), np.sign(state[2]),
+             round(state[3])))
+        # return (np.sign(state[0]), round(state[1]), np.sign(state[2]),
+        #         round(state[3]))
+        return tuple(state_oh)
+
+    @staticmethod
+    def one_hot_state(rounded_state):
+        """
+        Returns the one-hot encoding of the state representatinon given.
+        """
+        x_pos_oh = PoleBalancing.one_hot_variable(rounded_state[0], 1)
+        x_vel_oh = PoleBalancing.one_hot_variable(rounded_state[1], 3)
+        angle_oh = PoleBalancing.one_hot_variable(rounded_state[2], 1)
+        angle_vel_oh = PoleBalancing.one_hot_variable(rounded_state[3], 3)
+        return x_pos_oh + x_vel_oh + angle_oh + angle_vel_oh
+
+    @staticmethod
+    def one_hot_variable(rounded_var: int, abs_max: int):
+        """
+        Returns the one-hot encoding of one rounded state variable
+        """
+        vector = [0] * (abs_max * 2 + 1)
+        for i, val in enumerate(range(-abs_max, abs_max + 1)):
+            if rounded_var <= val:
+                vector[i] = 1
+                return vector
+        vector[-1] = 1
+        return vector
 
 
 if __name__ == "__main__":
-    pole = PoleBalancing()
-    for _ in range(10):
-        pole.update(False)
-        print(str(pole))
+    # pole = PoleBalancing()
+    # for _ in range(10):
+    #     pole.update(False)
+    #     print(str(pole))
+    print(PoleBalancing.one_hot_variable(2, 1))

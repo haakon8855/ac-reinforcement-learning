@@ -84,7 +84,28 @@ class Hanoi:
         """
         Returns the current state of the sim world.
         """
-        return (*self.state, )
+        oh_state = Hanoi.one_hot_state(self.state, self.num_pegs)
+        # return (*self.state, )
+        return tuple(oh_state)
+
+    @staticmethod
+    def one_hot_state(state, num_pegs):
+        """
+        Returns the one-hot encoding of the state representatinon given.
+        """
+        oh_state = []
+        for pos in state:
+            oh_state += Hanoi.one_hot_variable(pos, num_pegs)
+        return oh_state
+
+    @staticmethod
+    def one_hot_variable(disc_pos: int, num_pegs: int):
+        """
+        Returns the one-hot encoding of one rounded state variable
+        """
+        vector = [0] * (num_pegs)
+        vector[disc_pos] = 1
+        return vector
 
     def is_current_state_final_state(self):
         """

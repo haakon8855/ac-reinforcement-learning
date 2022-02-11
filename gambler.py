@@ -43,8 +43,6 @@ class Gambler:
         Advances the sim world by one step. The action (int) represents the
         amount wagered.
         """
-        if self.failed:
-            return -1000
 
         self.current_step += 1
 
@@ -84,7 +82,6 @@ class Gambler:
         oh_state = [0] * (self.max_coins + 1)
         oh_state[self.state] = 1
         return tuple(oh_state)
-        return (self.state, )
 
     def is_current_state_final_state(self):
         """

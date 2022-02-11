@@ -35,11 +35,11 @@ class ReinforcementLearning:
         start_time = time()
         # Run for self.episodes number of times, printing progress every 10%
         for j in range(10):
-            self.epsilon -= self.epsilon_d
             for _ in range(self.episodes // 10):
                 self.one_episode()
                 self.sim_world.store_game_length()
             print(j, end="")
+            self.epsilon -= self.epsilon_d
             # self.epsilon /= j + 1
         end_time = time()
 

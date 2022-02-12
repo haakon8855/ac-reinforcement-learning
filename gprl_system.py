@@ -2,6 +2,8 @@
 
 from matplotlib import pyplot as plt
 import numpy as np
+import cProfile, pstats
+import io
 
 from configuration import Config
 from reinforcement_learning import ReinforcementLearning
@@ -74,7 +76,18 @@ class GPRLSystem:
 
 
 if __name__ == "__main__":
+
+    # profiler = cProfile.Profile()
+    # profiler.enable()
+
     # gprl = GPRLSystem("configs/config_pole.ini")
     gprl = GPRLSystem("configs/config_hanoi.ini")
     # gprl = GPRLSystem("configs/config_gambler.ini")
     gprl.run()
+
+    # profiler.disable()
+    # s = io.StringIO()
+    # ps = pstats.Stats(profiler, stream=s).sort_stats('tottime')
+    # ps.print_stats()
+    # with open('test.txt', 'w+') as f:
+    #     f.write(s.getvalue())

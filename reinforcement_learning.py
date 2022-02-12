@@ -2,6 +2,7 @@
 
 import random
 from time import time
+import numpy as np
 
 from critic import Critic
 from actor import Actor
@@ -24,23 +25,28 @@ class ReinforcementLearning:
         self.drate = drate  # gamma
         self.trace_decay = trace_decay  # lambda
         # Initialize critic, actor and sim world
-        self.critic = Critic(lrate, drate, trace_decay)
-        self.actor = Actor(lrate, drate, trace_decay)
         self.sim_world = sim_world
+        self.critic = Critic(table_critic, self.sim_world.get_state_length(),
+                             lrate, drate, trace_decay)
+        self.actor = Actor(lrate, drate, trace_decay)
 
     def train(self):
         """
         Runs through episodes in order to train the basic RL model.
         """
         start_time = time()
+        train_episode = self.one_episode
+        if not self.table_critic:
+            train_episode = self.one_episode_nn
         # Run for self.episodes number of times, printing progress every 10%
         for j in range(10):
             for _ in range(self.episodes // 10):
-                self.one_episode()
+                thyme = time()
+                train_episode()
+                print(time() - thyme)
                 self.sim_world.store_game_length()
             print(j, end="")
-            self.epsilon -= self.epsilon_d
-            # self.epsilon /= j + 1
+            self.decrease_epsilon()
         end_time = time()
 
         print(f"Time spent training: {end_time-start_time}")
@@ -51,6 +57,70 @@ class ReinforcementLearning:
         for _ in range(10):
             self.one_episode()
             self.sim_world.plot_history()
+
+    def decrease_epsilon(self):
+        """
+        Decreases epsilon.
+        """
+        if self.table_critic:
+            self.epsilon -= self.epsilon_d
+
+    def one_episode_nn(self):
+        """
+        Does one episode.
+        """
+        history = []
+        target_history = []
+        state = self.sim_world.produce_initial_state()
+        action = self.get_action(state)
+        # Reset eligibility
+        self.actor.initiate_eligibility()
+        # For each step of the episode:
+        end_state = False
+        while not end_state:
+            # 1. Do action a from state s:
+            reward = self.sim_world.update(action)
+            new_state = self.sim_world.get_current_state()
+            if self.sim_world.is_current_state_final_state():
+                history.append((*new_state, 0))
+                states = np.array(history)[:, :-1]
+                target_history.append(0)
+                self.critic.update_state_values(
+                    states,
+                    np.array(target_history).reshape(-1, 1))
+                print(f"done, {self.sim_world.current_step} steps", end="")
+                break
+            # Store state-action-pair in history
+            history.append((*state, action))
+            # 2.
+            proposed_action = self.get_action(new_state)
+            # 3.
+            self.actor.set_state_action_eligibility((*state, action), 1)
+            # 4.
+            td_error, target_td = self.critic.get_td_error(
+                reward, state, new_state)
+            target_history.append(target_td)
+            # 5.
+            self.critic.set_state_eligibility(state, 1)
+            # 6.
+            for state_action_pair in history:
+                state = state_action_pair[:-1]
+                action = state_action_pair[-1]
+                self.critic.update_state_eligibility(state)
+                self.actor.update_state_action_value(state_action_pair,
+                                                     td_error)
+                self.actor.update_state_action_eligibility(state_action_pair)
+            # 7.
+            state = new_state
+            action = proposed_action
+            # 8. Check if state is final or failed state
+            if (self.sim_world.is_current_state_failed_state()
+                    or self.sim_world.is_current_state_final_state()):
+                end_state = True
+                states = np.array(history)[:, :-1]
+                targets = np.array(target_history).reshape(-1, 1)
+                self.critic.update_state_values(states, targets)
+                print(f"done, {self.sim_world.current_step} steps")
 
     def one_episode(self):
         """
@@ -75,7 +145,7 @@ class ReinforcementLearning:
             # 3.
             self.actor.set_state_action_eligibility((*state, action), 1)
             # 4.
-            td_error = self.critic.get_td_error(reward, state, new_state)
+            td_error, _ = self.critic.get_td_error(reward, state, new_state)
             # 5.
             self.critic.set_state_eligibility(state, 1)
             # 6.
@@ -94,6 +164,7 @@ class ReinforcementLearning:
             if (self.sim_world.is_current_state_failed_state()
                     or self.sim_world.is_current_state_final_state()):
                 end_state = True
+                print(f"done, {self.sim_world.current_step} steps")
 
     def get_action(self, state):
         """

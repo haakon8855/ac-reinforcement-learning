@@ -141,6 +141,12 @@ class Gambler:
         """
         self.historic_game_length.append(self.current_step)
 
+    def get_state_length(self):
+        """
+        Returns the length of the one-hot encoded state representation vector.
+        """
+        return len(self.get_current_state())
+
     def __str__(self):
         outstring = f"state: {self.state}"
         return outstring

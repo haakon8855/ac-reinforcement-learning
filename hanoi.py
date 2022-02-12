@@ -148,6 +148,12 @@ class Hanoi:
         """
         self.historic_game_length.append(self.current_step)
 
+    def get_state_length(self):
+        """
+        Returns the length of the one-hot encoded state representation vector.
+        """
+        return self.num_pegs * self.num_discs
+
     def __str__(self):
         outstring = f"state: {self.state}"
         return outstring

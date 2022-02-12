@@ -16,7 +16,7 @@ class PoleBalancing():
         self.length = 0.5  # m
         self.mass_p = 0.1  # kg
         self.mass_c = 1  # kg
-        self.gravity = 9.8  # m/s^2
+        self.gravity = -9.8  # m/s^2
         self.force = 10  # N
         self.max_angle = 0.21  # radians
         self.max_x_pos = 2.4  # m
@@ -177,6 +177,12 @@ class PoleBalancing():
         Stores the game length in a list to plot later.
         """
         self.historic_game_length.append(self.current_step)
+
+    def get_state_length(self):
+        """
+        Returns the length of the one-hot encoded state representation vector.
+        """
+        return len(self.get_current_state())
 
     def __str__(self):
         outstring = ""

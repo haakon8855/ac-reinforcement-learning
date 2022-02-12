@@ -33,7 +33,7 @@ class Critic:
         model.add(ks.layers.Dense(50, activation='tanh'))
         model.add(ks.layers.Dense(50, activation='tanh'))
         model.add(ks.layers.Dense(1))
-        model.compile(optimizer=opt(learning_rate=0.01), loss='mse')
+        model.compile(optimizer=opt(learning_rate=self.lrate), loss='mse')
         self.state_value_nn = model
 
     def get_td_error(self, reward, state, new_state):
@@ -87,7 +87,7 @@ class Critic:
         """
         Update the state evaluations given a list of states and td_error.
         """
-        self.state_value_nn.fit(states, targets, epochs=1, verbose=0)
+        self.state_value_nn.fit(states, targets, epochs=10, verbose=0)
 
     def update_state_eligibility(self, state):
         """

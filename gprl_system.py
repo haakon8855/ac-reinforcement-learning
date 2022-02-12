@@ -25,7 +25,8 @@ class GPRLSystem:
         self.max_steps = int(conf_globals['max_steps'])
         self.table_critic = conf_globals['table_critic'] == 'true'
         self.epsilon = float(conf_globals['epsilon'])
-        self.lrate = float(conf_globals['lrate'])
+        self.actor_lrate = float(conf_globals['actor_lrate'])
+        self.critic_lrate = float(conf_globals['critic_lrate'])
         self.trace_decay = float(conf_globals['trace_decay'])
         self.drate = float(conf_globals['drate'])
 
@@ -41,7 +42,8 @@ class GPRLSystem:
 
         self.reinforcement_learner = ReinforcementLearning(
             self.sim_world, self.episodes, self.max_steps, self.table_critic,
-            self.epsilon, self.lrate, self.trace_decay, self.drate)
+            self.epsilon, self.actor_lrate, self.critic_lrate,
+            self.trace_decay, self.drate)
 
         if self.problem == 'gambler':
             self.before = True
@@ -81,8 +83,11 @@ if __name__ == "__main__":
     # profiler.enable()
 
     # gprl = GPRLSystem("configs/config_pole.ini")
-    gprl = GPRLSystem("configs/config_hanoi.ini")
+    # gprl = GPRLSystem("configs/config_hanoi.ini")
     # gprl = GPRLSystem("configs/config_gambler.ini")
+    gprl = GPRLSystem("configs/config_pole_nn.ini")
+    # gprl = GPRLSystem("configs/config_hanoi_nn.ini")
+    # gprl = GPRLSystem("configs/config_gambler_nn.ini")
     gprl.run()
 
     # profiler.disable()

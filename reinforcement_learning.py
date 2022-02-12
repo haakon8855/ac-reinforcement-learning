@@ -15,20 +15,21 @@ class ReinforcementLearning:
     """
 
     def __init__(self, sim_world, episodes, max_steps, table_critic, epsilon,
-                 lrate, trace_decay, drate):
+                 actor_lrate, critic_lrate, trace_decay, drate):
         self.episodes = episodes
         self.max_steps = max_steps
         self.table_critic = table_critic
         self.epsilon = epsilon
         self.epsilon_d = epsilon / 10
-        self.lrate = lrate  # alpha
+        self.actor_lrate = actor_lrate  # alpha
+        self.critic_lrate = critic_lrate  # alpha
         self.drate = drate  # gamma
         self.trace_decay = trace_decay  # lambda
         # Initialize critic, actor and sim world
         self.sim_world = sim_world
         self.critic = Critic(table_critic, self.sim_world.get_state_length(),
-                             lrate, drate, trace_decay)
-        self.actor = Actor(lrate, drate, trace_decay)
+                             critic_lrate, drate, trace_decay)
+        self.actor = Actor(actor_lrate, drate, trace_decay)
 
     def train(self):
         """
@@ -43,8 +44,9 @@ class ReinforcementLearning:
             for _ in range(self.episodes // 10):
                 thyme = time()
                 train_episode()
-                print(time() - thyme)
+                print(round(time() - thyme, 2), end="")
                 self.sim_world.store_game_length()
+                print(f", Steps: {self.sim_world.current_step}")
             print(j, end="")
             self.decrease_epsilon()
         end_time = time()
@@ -88,7 +90,6 @@ class ReinforcementLearning:
                 self.critic.update_state_values(
                     states,
                     np.array(target_history).reshape(-1, 1))
-                print(f"done, {self.sim_world.current_step} steps", end="")
                 break
             # Store state-action-pair in history
             history.append((*state, action))
@@ -120,7 +121,6 @@ class ReinforcementLearning:
                 states = np.array(history)[:, :-1]
                 targets = np.array(target_history).reshape(-1, 1)
                 self.critic.update_state_values(states, targets)
-                print(f"done, {self.sim_world.current_step} steps")
 
     def one_episode(self):
         """
@@ -164,7 +164,6 @@ class ReinforcementLearning:
             if (self.sim_world.is_current_state_failed_state()
                     or self.sim_world.is_current_state_final_state()):
                 end_state = True
-                print(f"done, {self.sim_world.current_step} steps")
 
     def get_action(self, state):
         """

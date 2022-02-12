@@ -14,8 +14,18 @@ class ReinforcementLearning:
     communication between actor-critic and the sim-world.
     """
 
-    def __init__(self, sim_world, episodes, max_steps, table_critic, epsilon,
-                 actor_lrate, critic_lrate, trace_decay, drate):
+    def __init__(self,
+                 sim_world,
+                 episodes,
+                 max_steps,
+                 table_critic,
+                 epsilon,
+                 actor_lrate,
+                 critic_lrate,
+                 trace_decay,
+                 drate,
+                 verbose=False,
+                 seed=None):
         self.episodes = episodes
         self.max_steps = max_steps
         self.table_critic = table_critic
@@ -25,10 +35,11 @@ class ReinforcementLearning:
         self.critic_lrate = critic_lrate  # alpha
         self.drate = drate  # gamma
         self.trace_decay = trace_decay  # lambda
+        self.verbose = verbose
         # Initialize critic, actor and sim world
         self.sim_world = sim_world
-        self.critic = Critic(table_critic, self.sim_world.get_state_length(),
-                             critic_lrate, drate, trace_decay)
+        self.critic = Critic(table_critic, critic_lrate, drate, trace_decay,
+                             seed)
         self.actor = Actor(actor_lrate, drate, trace_decay)
 
     def train(self):
@@ -44,9 +55,10 @@ class ReinforcementLearning:
             for _ in range(self.episodes // 10):
                 thyme = time()
                 train_episode()
-                print(round(time() - thyme, 2), end="")
+                if self.verbose:
+                    print(round(time() - thyme, 2), end="")
+                    print(f", Steps: {self.sim_world.current_step}")
                 self.sim_world.store_game_length()
-                print(f", Steps: {self.sim_world.current_step}")
             print(j, end="")
             self.decrease_epsilon()
         end_time = time()
@@ -78,8 +90,7 @@ class ReinforcementLearning:
         # Reset eligibility
         self.actor.initiate_eligibility()
         # For each step of the episode:
-        end_state = False
-        while not end_state:
+        while True:
             # 1. Do action a from state s:
             reward = self.sim_world.update(action)
             new_state = self.sim_world.get_current_state()
@@ -117,10 +128,10 @@ class ReinforcementLearning:
             # 8. Check if state is final or failed state
             if (self.sim_world.is_current_state_failed_state()
                     or self.sim_world.is_current_state_final_state()):
-                end_state = True
                 states = np.array(history)[:, :-1]
                 targets = np.array(target_history).reshape(-1, 1)
                 self.critic.update_state_values(states, targets)
+                break
 
     def one_episode(self):
         """

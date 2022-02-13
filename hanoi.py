@@ -18,6 +18,8 @@ class Hanoi:
         self.max_steps = 300
         self.failed = False
         self.history = []
+        self.best_history = []
+        self.best_game_length = float('inf')
         self.historic_game_length = []
         self.possible_actions = []
         self.calculate_possible_actions()
@@ -41,7 +43,7 @@ class Hanoi:
         self.current_step = 0
         self.state = [0 for _ in range(self.num_discs)]
         self.failed = False
-        self.history = []
+        self.history = [self.state.copy()]
         return self.get_current_state()
 
     def update(self, action: int):
@@ -56,7 +58,7 @@ class Hanoi:
             raise Exception("Illegal action")
         self.state = self.get_child_state(action)
 
-        self.history.append(self.state)
+        self.history.append(self.state.copy())
 
         # Update state values with the newly updated ones
         if not self.failed:
@@ -64,8 +66,7 @@ class Hanoi:
                 self.failed = True
 
         # Return reward
-        reward = -1
-        return reward
+        return -1
 
     def get_child_state(self, action: int):
         """
@@ -84,7 +85,9 @@ class Hanoi:
         """
         Returns the current state of the sim world.
         """
-        return (*self.state, )
+        oh_state = Hanoi.one_hot_state(self.state, self.num_pegs)
+        # return (*self.state, )
+        return tuple(oh_state)
 
     def is_current_state_final_state(self):
         """
@@ -127,11 +130,33 @@ class Hanoi:
             if self.state[i] == self.possible_actions[action][0]:
                 return True
 
-    def plot_history(self):
+    def plot_history_best_episode(self):
         """
-        Plots the course of the current game up until current state.
+        Plots the course of the best game.
         """
-        # TODO: Do
+        for state in self.best_history:
+            self.plot_hanoi_state(state)
+
+    def plot_hanoi_state(self, state):
+        """
+        Plot one state of towers of hanoi with graphical representation of
+        pegs and discs.
+        """
+        _, axis = plt.subplots()
+        axis.set_xlim((0, self.num_pegs * 10))
+        axis.set_ylim((0, self.num_discs * 10))
+        heights = [0] * self.num_pegs
+        pole_top = [0] * self.num_pegs
+        for disc, pos in enumerate(state):
+            radius = self.num_discs - disc
+            y_position = pole_top[pos] + radius
+            pole_top[pos] = y_position + radius
+            disc_position = 5 + pos * 10, y_position
+            heights[pos] += 1
+            circle = plt.Circle(disc_position, radius=radius)
+            axis.add_patch(circle)
+        plt.show()
+        return None
 
     def plot_historic_game_length(self):
         """
@@ -144,11 +169,39 @@ class Hanoi:
         """
         Stores the game length in a list to plot later.
         """
+        if self.current_step < self.best_game_length:
+            self.best_history = self.history.copy()
+            self.best_game_length = self.current_step
         self.historic_game_length.append(self.current_step)
+
+    def get_state_length(self):
+        """
+        Returns the length of the one-hot encoded state representation vector.
+        """
+        return self.num_pegs * self.num_discs
 
     def __str__(self):
         outstring = f"state: {self.state}"
         return outstring
+
+    @staticmethod
+    def one_hot_state(state, num_pegs):
+        """
+        Returns the one-hot encoding of the state representatinon given.
+        """
+        oh_state = []
+        for pos in state:
+            oh_state += Hanoi.one_hot_variable(pos, num_pegs)
+        return oh_state
+
+    @staticmethod
+    def one_hot_variable(disc_pos: int, num_pegs: int):
+        """
+        Returns the one-hot encoding of one rounded state variable
+        """
+        vector = [0] * (num_pegs)
+        vector[disc_pos] = 1
+        return vector
 
 
 if __name__ == "__main__":

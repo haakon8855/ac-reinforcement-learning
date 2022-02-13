@@ -22,6 +22,8 @@ class Gambler:
         self.failed = False
         self.history = []
         self.historic_game_length = []
+        self.best_history = []
+        self.best_game_length = float('inf')
         self.possible_actions = []
 
         # Initialization
@@ -43,8 +45,6 @@ class Gambler:
         Advances the sim world by one step. The action (int) represents the
         amount wagered.
         """
-        if self.failed:
-            return -1000
 
         self.current_step += 1
 
@@ -81,7 +81,9 @@ class Gambler:
         """
         Returns the current state of the sim world.
         """
-        return (self.state, )
+        oh_state = [0] * (self.max_coins + 1)
+        oh_state[self.state] = 1
+        return tuple(oh_state)
 
     def is_current_state_final_state(self):
         """
@@ -106,7 +108,7 @@ class Gambler:
         if state is None:
             state = self.state
         else:
-            state = state[0]
+            state = state.index(1)
         dist_to_win = self.max_coins - state
         dist_to_lose = state
         max_bet = min(dist_to_lose, dist_to_win)
@@ -122,11 +124,12 @@ class Gambler:
         max_bet = min(dist_to_lose, dist_to_win)
         return action >= self.min_bet and action <= max_bet
 
-    def plot_history(self):
+    def plot_history_best_episode(self):
         """
         Plots the course of the current game up until current state.
         """
-        # TODO: Do
+        plt.plot(self.best_history)
+        plt.show()
 
     def plot_historic_game_length(self):
         """
@@ -139,7 +142,16 @@ class Gambler:
         """
         Stores the game length in a list to plot later.
         """
+        if self.current_step < self.best_game_length:
+            self.best_history = self.history.copy()
+            self.best_game_length = self.current_step
         self.historic_game_length.append(self.current_step)
+
+    def get_state_length(self):
+        """
+        Returns the length of the one-hot encoded state representation vector.
+        """
+        return len(self.get_current_state())
 
     def __str__(self):
         outstring = f"state: {self.state}"

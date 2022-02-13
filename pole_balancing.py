@@ -16,7 +16,7 @@ class PoleBalancing():
         self.length = 0.5  # m
         self.mass_p = 0.1  # kg
         self.mass_c = 1  # kg
-        self.gravity = 9.8  # m/s^2
+        self.gravity = -9.8  # m/s^2
         self.force = 10  # N
         self.max_angle = 0.21  # radians
         self.max_x_pos = 2.4  # m
@@ -31,6 +31,8 @@ class PoleBalancing():
         self.balancing_failed = False
         self.cart_exited = False
         self.historic_angle = []
+        self.best_history = []
+        self.best_game_length = float('-inf')
         self.historic_game_length = []
         self.produce_initial_state()
 
@@ -158,11 +160,11 @@ class PoleBalancing():
             pass
         return False, True
 
-    def plot_history(self):
+    def plot_history_best_episode(self):
         """
         Plots the historic angle of the pole.
         """
-        plt.plot(self.historic_angle)
+        plt.plot(self.best_history)
         plt.show()
 
     def plot_historic_game_length(self):
@@ -176,7 +178,16 @@ class PoleBalancing():
         """
         Stores the game length in a list to plot later.
         """
+        if self.current_step > self.best_game_length:
+            self.best_history = self.historic_angle.copy()
+            self.best_game_length = self.current_step
         self.historic_game_length.append(self.current_step)
+
+    def get_state_length(self):
+        """
+        Returns the length of the one-hot encoded state representation vector.
+        """
+        return len(self.get_current_state())
 
     def __str__(self):
         outstring = ""
@@ -195,12 +206,41 @@ class PoleBalancing():
         # return (round(state[0], 1), round(state[1],
         #                                   1), round(state[2],
         #                                             2), round(state[3], 1))
-        return (np.sign(state[0]), round(state[1]), np.sign(state[2]),
-                round(state[3]))
+        state_oh = PoleBalancing.one_hot_state(
+            (np.sign(state[0]), round(state[1]), np.sign(state[2]),
+             round(state[3])))
+        # return (np.sign(state[0]), round(state[1]), np.sign(state[2]),
+        #         round(state[3]))
+        return tuple(state_oh)
+
+    @staticmethod
+    def one_hot_state(rounded_state):
+        """
+        Returns the one-hot encoding of the state representatinon given.
+        """
+        x_pos_oh = PoleBalancing.one_hot_variable(rounded_state[0], 1)
+        x_vel_oh = PoleBalancing.one_hot_variable(rounded_state[1], 3)
+        angle_oh = PoleBalancing.one_hot_variable(rounded_state[2], 1)
+        angle_vel_oh = PoleBalancing.one_hot_variable(rounded_state[3], 3)
+        return x_pos_oh + x_vel_oh + angle_oh + angle_vel_oh
+
+    @staticmethod
+    def one_hot_variable(rounded_var: int, abs_max: int):
+        """
+        Returns the one-hot encoding of one rounded state variable
+        """
+        vector = [0] * (abs_max * 2 + 1)
+        for i, val in enumerate(range(-abs_max, abs_max + 1)):
+            if rounded_var <= val:
+                vector[i] = 1
+                return vector
+        vector[-1] = 1
+        return vector
 
 
 if __name__ == "__main__":
-    pole = PoleBalancing()
-    for _ in range(10):
-        pole.update(False)
-        print(str(pole))
+    # pole = PoleBalancing()
+    # for _ in range(10):
+    #     pole.update(False)
+    #     print(str(pole))
+    print(PoleBalancing.one_hot_variable(2, 1))

@@ -3,6 +3,7 @@
 import random
 from time import time
 import numpy as np
+from math import floor
 
 from critic import Critic
 from actor import Actor
@@ -51,17 +52,30 @@ class ReinforcementLearning:
         if not self.table_critic:
             train_episode = self.one_episode_nn
         # Run for self.episodes number of times, printing progress every 10%
-        for j in range(100):
-            for _ in range(self.episodes // 100):
+        if self.episodes % 100 == 0:
+            for j in range(100):
+                for _ in range(self.episodes // 100):
+                    thyme = time()
+                    train_episode()
+                    if self.verbose:
+                        print(round(time() - thyme, 2), end="")
+                        print(f", Steps: {self.sim_world.current_step}")
+                    self.sim_world.store_game_length()
+                print("-", end="")
+                self.decrease_epsilon()
+            end_time = time()
+        else:
+            for j in range(self.episodes):
                 thyme = time()
                 train_episode()
                 if self.verbose:
                     print(round(time() - thyme, 2), end="")
                     print(f", Steps: {self.sim_world.current_step}")
                 self.sim_world.store_game_length()
-            print("-", end="")
-            self.decrease_epsilon()
-        end_time = time()
+                if j % floor(self.episodes / 100 + 0.5) == 0:
+                    print("-", end="")
+                    self.decrease_epsilon()
+            end_time = time()
 
         print(f"Time spent training: {end_time-start_time}")
         self.sim_world.plot_historic_game_length()

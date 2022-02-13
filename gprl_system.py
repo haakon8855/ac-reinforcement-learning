@@ -98,8 +98,8 @@ def main():
     # profiler.enable()
 
     # gprl = GPRLSystem("configs/config_pole.ini")
-    # gprl = GPRLSystem("configs/config_hanoi.ini")
-    gprl = GPRLSystem("configs/config_gambler.ini")
+    gprl = GPRLSystem("configs/config_hanoi.ini")
+    # gprl = GPRLSystem("configs/config_gambler.ini")
     # gprl = GPRLSystem("configs/config_pole_nn.ini")
     # gprl = GPRLSystem("configs/config_hanoi_nn.ini")
     # gprl = GPRLSystem("configs/config_gambler_nn.ini")

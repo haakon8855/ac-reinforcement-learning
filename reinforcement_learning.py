@@ -68,9 +68,9 @@ class ReinforcementLearning:
 
         # Set epsilon to 0 for actual gameplay without exploration
         self.epsilon = 0
-        for _ in range(10):
-            self.one_episode()
-            self.sim_world.plot_history()
+        # TODO: Make this not learnig
+        self.one_episode()
+        self.sim_world.plot_history_best_episode()
 
     def decrease_epsilon(self):
         """

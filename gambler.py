@@ -22,6 +22,8 @@ class Gambler:
         self.failed = False
         self.history = []
         self.historic_game_length = []
+        self.best_history = []
+        self.best_game_length = float('inf')
         self.possible_actions = []
 
         # Initialization
@@ -122,11 +124,12 @@ class Gambler:
         max_bet = min(dist_to_lose, dist_to_win)
         return action >= self.min_bet and action <= max_bet
 
-    def plot_history(self):
+    def plot_history_best_episode(self):
         """
         Plots the course of the current game up until current state.
         """
-        # TODO: Do
+        plt.plot(self.best_history)
+        plt.show()
 
     def plot_historic_game_length(self):
         """
@@ -139,6 +142,9 @@ class Gambler:
         """
         Stores the game length in a list to plot later.
         """
+        if self.current_step < self.best_game_length:
+            self.best_history = self.history.copy()
+            self.best_game_length = self.current_step
         self.historic_game_length.append(self.current_step)
 
     def get_state_length(self):

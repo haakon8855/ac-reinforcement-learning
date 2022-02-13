@@ -31,6 +31,7 @@ class GPRLSystem:
         self.drate = float(conf_globals['drate'])
         self.verbose = conf_globals['verbose'] == 'true'
         self.seed = None
+        # TODO: Define nn in config
         if 'seed' in conf_globals:
             self.seed = int(conf_globals['seed'])
 
@@ -73,14 +74,14 @@ class GPRLSystem:
         for state in states:
             wagers.append(self.reinforcement_learner.get_action(tuple(state)))
         plt.plot(states_xaxis, wagers)
-        # Draw vertical lines where peaks are expected
-        for i in range(1, 8):
-            # plt.axvline(12.5 * i, color='tab:gray', linestyle='--')
-            plt.scatter(12.5 * i,
-                        50 - 12 * abs(i - 4),
-                        s=200,
-                        marker=(5, 1),
-                        color='tab:gray')
+        # Draw stars where peaks are expected
+        # for i in range(1, 8):
+        #     # plt.axvline(12.5 * i, color='tab:gray', linestyle='--')
+        #     plt.scatter(12.5 * i,
+        #                 50 - 12 * abs(i - 4),
+        #                 s=200,
+        #                 marker=(5, 1),
+        #                 color='tab:gray')
         if self.before:
             plt.savefig('plots/before.png')
             self.before = False

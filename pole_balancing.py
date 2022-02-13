@@ -31,6 +31,8 @@ class PoleBalancing():
         self.balancing_failed = False
         self.cart_exited = False
         self.historic_angle = []
+        self.best_history = []
+        self.best_game_length = float('-inf')
         self.historic_game_length = []
         self.produce_initial_state()
 
@@ -158,11 +160,11 @@ class PoleBalancing():
             pass
         return False, True
 
-    def plot_history(self):
+    def plot_history_best_episode(self):
         """
         Plots the historic angle of the pole.
         """
-        plt.plot(self.historic_angle)
+        plt.plot(self.best_history)
         plt.show()
 
     def plot_historic_game_length(self):
@@ -176,6 +178,9 @@ class PoleBalancing():
         """
         Stores the game length in a list to plot later.
         """
+        if self.current_step > self.best_game_length:
+            self.best_history = self.historic_angle.copy()
+            self.best_game_length = self.current_step
         self.historic_game_length.append(self.current_step)
 
     def get_state_length(self):

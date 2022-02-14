@@ -49,7 +49,12 @@ class GPRLSystem:
         elif self.problem == 'hanoi':
             num_pegs = int(conf_globals['num_pegs'])
             num_discs = int(conf_globals['num_discs'])
-            self.sim_world = Hanoi(num_pegs=num_pegs, num_discs=num_discs)
+            anim_delay = 0.5
+            if 'anim_delay' in conf_globals:
+                anim_delay = float(conf_globals['anim_delay'])
+            self.sim_world = Hanoi(num_pegs=num_pegs,
+                                   num_discs=num_discs,
+                                   animation_delay=anim_delay)
         elif self.problem == 'gambler':
             win_prob = float(conf_globals['win_prob'])
             self.sim_world = Gambler(win_prob=win_prob)
@@ -101,10 +106,10 @@ def main():
     # profiler.enable()
 
     # gprl = GPRLSystem("configs/config_pole.ini")
-    gprl = GPRLSystem("configs/config_hanoi.ini")
+    # gprl = GPRLSystem("configs/config_hanoi.ini")
     # gprl = GPRLSystem("configs/config_gambler.ini")
     # gprl = GPRLSystem("configs/config_pole_nn.ini")
-    # gprl = GPRLSystem("configs/config_hanoi_nn.ini")
+    gprl = GPRLSystem("configs/config_hanoi_nn.ini")
     # gprl = GPRLSystem("configs/config_gambler_nn.ini")
     gprl.run()
 

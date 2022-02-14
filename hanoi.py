@@ -8,10 +8,11 @@ class Hanoi:
     Hanoi class for holding the simulated world of 'Towers of Hanoi'.
     """
 
-    def __init__(self, num_pegs=3, num_discs=3):
+    def __init__(self, num_pegs=3, num_discs=3, animation_delay=0.5):
         # Constants:
         self.num_pegs = num_pegs
         self.num_discs = num_discs
+        self.animation_delay = animation_delay
         # State parameters:
         self.state = [0 for _ in range(num_discs)]
         self.current_step = 0
@@ -156,8 +157,9 @@ class Hanoi:
             circle = plt.Circle(disc_position, radius=radius)
             axis.add_patch(circle)
         plt.title(f"Step {step}")
-        plt.show()
-        return None
+        plt.show(block=False)
+        plt.pause(self.animation_delay)
+        plt.close()
 
     def plot_historic_game_length(self):
         """

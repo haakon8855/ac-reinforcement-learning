@@ -59,10 +59,11 @@ class ReinforcementLearning:
                     thyme = time()
                     train_episode()
                     if self.verbose:
-                        print(round(time() - thyme, 2), end="")
+                        print(f"Secs: {round(time() - thyme, 2)}", end="")
                         print(f", Steps: {self.sim_world.current_step}")
                     self.sim_world.store_game_length()
-                print("-", end="")
+                if not self.verbose:
+                    print("-", end="")
                 self.decrease_epsilon()
             end_time = time()
         else:
@@ -70,11 +71,12 @@ class ReinforcementLearning:
                 thyme = time()
                 train_episode()
                 if self.verbose:
-                    print(round(time() - thyme, 2), end="")
+                    print(f"Secs: {round(time() - thyme, 2)}", end="")
                     print(f", Steps: {self.sim_world.current_step}")
                 self.sim_world.store_game_length()
                 if j % floor(self.episodes / 100 + 0.5) == 0:
-                    print("-", end="")
+                    if not self.verbose:
+                        print("-", end="")
                     self.decrease_epsilon()
             end_time = time()
 

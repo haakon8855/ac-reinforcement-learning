@@ -1,5 +1,6 @@
 """haakon8855"""
 
+import json
 from matplotlib import pyplot as plt
 import numpy as np
 # import cProfile, pstats
@@ -31,12 +32,20 @@ class GPRLSystem:
         self.drate = float(conf_globals['drate'])
         self.verbose = conf_globals['verbose'] == 'true'
         self.seed = None
-        # TODO: Define nn in config
         if 'seed' in conf_globals:
             self.seed = int(conf_globals['seed'])
 
+        self.network_dimensions = None
+        if not self.table_critic:
+            self.network_dimensions = json.loads(conf_globals['nn_dims'])
+
         if self.problem == 'cartpole':
-            self.sim_world = PoleBalancing()
+            self.length = float(conf_globals['length'])
+            self.mass_p = float(conf_globals['pole_mass'])
+            self.gravity = float(conf_globals['gravity'])
+            self.tau = float(conf_globals['timestep'])
+            self.sim_world = PoleBalancing(self.length, self.mass_p,
+                                           self.gravity, self.tau)
         elif self.problem == 'hanoi':
             num_pegs = int(conf_globals['num_pegs'])
             num_discs = int(conf_globals['num_discs'])
@@ -48,7 +57,8 @@ class GPRLSystem:
         self.reinforcement_learner = ReinforcementLearning(
             self.sim_world, self.episodes, self.max_steps, self.table_critic,
             self.epsilon, self.actor_lrate, self.critic_lrate,
-            self.trace_decay, self.drate, self.verbose, self.seed)
+            self.trace_decay, self.drate, self.verbose, self.seed,
+            self.network_dimensions)
 
         if self.problem == 'gambler':
             self.before = True
@@ -74,14 +84,7 @@ class GPRLSystem:
         for state in states:
             wagers.append(self.reinforcement_learner.get_action(tuple(state)))
         plt.plot(states_xaxis, wagers)
-        # Draw stars where peaks are expected
-        # for i in range(1, 8):
-        #     # plt.axvline(12.5 * i, color='tab:gray', linestyle='--')
-        #     plt.scatter(12.5 * i,
-        #                 50 - 12 * abs(i - 4),
-        #                 s=200,
-        #                 marker=(5, 1),
-        #                 color='tab:gray')
+
         if self.before:
             plt.savefig('plots/before.png')
             self.before = False

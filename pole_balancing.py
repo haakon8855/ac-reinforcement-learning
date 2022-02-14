@@ -5,22 +5,22 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 
-class PoleBalancing():
+class PoleBalancing:
     """
     PoleBalancing class for holding the simulated world for balancing a pole
     on a cart.
     """
 
-    def __init__(self):
+    def __init__(self, length=0.5, mass_p=0.1, gravity=-9.8, tau=0.02):
         # Constants:
-        self.length = 0.5  # m
-        self.mass_p = 0.1  # kg
+        self.length = length  # m
+        self.mass_p = mass_p  # kg
+        self.gravity = gravity  # m/s^2
+        self.tau = tau  # s, timestep length tau
         self.mass_c = 1  # kg
-        self.gravity = -9.8  # m/s^2
         self.force = 10  # N
         self.max_angle = 0.21  # radians
         self.max_x_pos = 2.4  # m
-        self.tau = 0.02  # s, timestep length tau
         self.steps = 300  # num of timesteps in episode
         # State parameters:
         self.angle = 0

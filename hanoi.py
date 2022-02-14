@@ -134,10 +134,10 @@ class Hanoi:
         """
         Plots the course of the best game.
         """
-        for state in self.best_history:
-            self.plot_hanoi_state(state)
+        for i, state in enumerate(self.best_history):
+            self.plot_hanoi_state(state, i)
 
-    def plot_hanoi_state(self, state):
+    def plot_hanoi_state(self, state, step):
         """
         Plot one state of towers of hanoi with graphical representation of
         pegs and discs.
@@ -155,6 +155,7 @@ class Hanoi:
             heights[pos] += 1
             circle = plt.Circle(disc_position, radius=radius)
             axis.add_patch(circle)
+        plt.title(f"Step {step}")
         plt.show()
         return None
 

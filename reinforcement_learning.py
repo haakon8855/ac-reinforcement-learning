@@ -2,8 +2,8 @@
 
 import random
 from time import time
-import numpy as np
 from math import floor
+import numpy as np
 
 from critic import Critic
 from actor import Actor
@@ -26,7 +26,8 @@ class ReinforcementLearning:
                  trace_decay,
                  drate,
                  verbose=False,
-                 seed=None):
+                 seed=None,
+                 nn_dims=None):
         self.episodes = episodes
         self.max_steps = max_steps
         self.table_critic = table_critic
@@ -40,7 +41,7 @@ class ReinforcementLearning:
         # Initialize critic, actor and sim world
         self.sim_world = sim_world
         self.critic = Critic(table_critic, critic_lrate, drate, trace_decay,
-                             seed)
+                             seed, nn_dims)
         self.actor = Actor(actor_lrate, drate, trace_decay)
 
     def train(self):

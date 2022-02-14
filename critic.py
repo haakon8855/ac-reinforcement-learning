@@ -12,7 +12,13 @@ class Critic:
     on its actions.
     """
 
-    def __init__(self, table_critic, lrate, drate, trace_decay, seed=None):
+    def __init__(self,
+                 table_critic,
+                 lrate,
+                 drate,
+                 trace_decay,
+                 seed=None,
+                 nn_dims=None):
         self.state_value = defaultdict(Critic.default_state_value)
         self.state_eligibility = defaultdict(lambda: 0)
         self.table_critic = table_critic
@@ -20,6 +26,9 @@ class Critic:
         self.lrate = lrate
         self.drate = drate
         self.trace_decay = trace_decay
+        self.nn_dims = nn_dims
+        if self.nn_dims is None:
+            self.nn_dims = [50, 1]
         if seed is not None:
             ks.utils.set_random_seed(seed)
         if not table_critic:
@@ -30,10 +39,11 @@ class Critic:
         Initializes the neural network.
         """
         opt = ks.optimizers.Adam
-        loss = ks.losses.mse
         model = ks.models.Sequential()
-        model.add(ks.layers.Dense(50, activation='tanh'))
-        model.add(ks.layers.Dense(1))
+        for nodes in self.nn_dims[:-1]:
+            model.add(ks.layers.Dense(nodes, activation='tanh'))
+        # model.add(ks.layers.Dense(50, activation='tanh'))
+        model.add(ks.layers.Dense(self.nn_dims[-1]))
         model.compile(optimizer=opt(learning_rate=self.lrate), loss='mse')
         self.state_value_nn = model
 

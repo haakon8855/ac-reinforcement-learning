@@ -45,15 +45,16 @@ class Gambler:
         Advances the sim world by one step. The action (int) represents the
         amount wagered.
         """
-
         self.current_step += 1
 
         if not self.action_is_legal(action):
             raise Exception("Illegal action")
 
+        # Cache current state before state transition for reward calculation
         old_state = self.state
         self.state = self.get_child_state(action)
 
+        # Cache new state for animation
         self.history.append(self.state)
 
         # Check if state is failed state
@@ -61,7 +62,8 @@ class Gambler:
             if self.current_step >= self.max_steps or self.state == 0:
                 self.failed = True
 
-        # Return reward
+        # Return reward, reward is amount of money earned in current step
+        # Reward is positive if bet was successful, negative if not
         reward = self.state - old_state
         return reward
 
@@ -109,9 +111,10 @@ class Gambler:
             state = self.state
         else:
             state = state.index(1)
-        dist_to_win = self.max_coins - state
-        dist_to_lose = state
+        dist_to_win = self.max_coins - state  # Amount of coins needed to win
+        dist_to_lose = state  # Current amount of coins
         max_bet = min(dist_to_lose, dist_to_win)
+        # Returns [1] if currents state is illegal state
         return [self.min_bet] + list(range(self.min_bet + 1, max_bet + 1))
 
     def action_is_legal(self, action):
@@ -119,9 +122,11 @@ class Gambler:
         Returns whether the given action is legal to perform or not from the
         current state.
         """
+        # Calculates the minimum and maximum allowed bet
         dist_to_win = self.max_coins - self.state
         dist_to_lose = self.state
         max_bet = min(dist_to_lose, dist_to_win)
+        # Checks wheter the action is wihin that range
         return action >= self.min_bet and action <= max_bet
 
     def plot_history_best_episode(self):
@@ -156,15 +161,3 @@ class Gambler:
     def __str__(self):
         outstring = f"state: {self.state}"
         return outstring
-
-
-if __name__ == "__main__":
-    hanoi = Gambler()
-    print(str(hanoi))
-    print(hanoi.get_legal_actions())
-    print(hanoi.possible_actions)
-    hanoi.update(1)
-    print(str(hanoi))
-    print(hanoi.get_legal_actions())
-    # pole.update(False)
-    # print(str(pole))

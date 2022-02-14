@@ -101,51 +101,63 @@ class ReinforcementLearning:
         """
         Does one episode.
         """
+        # Init history-tracking lists
         history = []
         target_history = []
+        # Start the simworld in its initial state and get a proposed
+        # action for that state.
         state = self.sim_world.produce_initial_state()
         action = self.get_action(state)
         # Reset eligibility
         self.actor.initiate_eligibility()
         # For each step of the episode:
         while True:
-            # 1. Do action a from state s:
+            # Do action a from state s:
             reward = self.sim_world.update(action)
             new_state = self.sim_world.get_current_state()
+            # Train NN if action a led to a final state
             if self.sim_world.is_current_state_final_state():
                 history.append((*new_state, 0))
                 states = np.array(history)[:, :-1]
-                target_history.append(0)
+                target_history.append(0)  # Important to set target to 0
                 self.critic.update_state_values(
                     states,
                     np.array(target_history).reshape(-1, 1))
                 break
-            # Store state-action-pair in history
+            # Append state-action-pair to history
             history.append((*state, action))
-            # 2.
+            # Get the agent's proposed action in the newly reached state
             proposed_action = self.get_action(new_state)
-            # 3.
+            # Set the eligibility for the former state and its action to 1
             self.actor.set_state_action_eligibility((*state, action), 1)
-            # 4.
+            # Calculate the target value and the TD-error
             td_error, target_td = self.critic.get_td_error(
                 reward, state, new_state)
+            # Cache the target value for training of NN after episode ends
             target_history.append(target_td)
-            # 5.
+            # Set the eligibility, doesn't really achieve anything in
+            # the NN-based critic.
             self.critic.set_state_eligibility(state, 1)
-            # 6.
+            # Update eligibilities and state-action values for each
+            # state-action-pair so far in the episode.
             for state_action_pair in history:
+                # Get a state and an action
                 state = state_action_pair[:-1]
                 action = state_action_pair[-1]
+                # Update state eligibility
                 self.critic.update_state_eligibility(state)
+                # Update state-action value (policy)
                 self.actor.update_state_action_value(state_action_pair,
                                                      td_error)
+                # Update state-action eligibility
                 self.actor.update_state_action_eligibility(state_action_pair)
-            # 7.
+            # Update the current state and action
             state = new_state
             action = proposed_action
-            # 8. Check if state is final or failed state
+            # Check if state is final or failed state
             if (self.sim_world.is_current_state_failed_state()
                     or self.sim_world.is_current_state_final_state()):
+                # Code reaches this block if timeout is reached
                 states = np.array(history)[:, :-1]
                 targets = np.array(target_history).reshape(-1, 1)
                 self.critic.update_state_values(states, targets)
@@ -155,7 +167,10 @@ class ReinforcementLearning:
         """
         Does one episode.
         """
+        # Init history-tracking list
         history = []
+        # Start the simworld in its initial state and get a proposed
+        # action for that state.
         state = self.sim_world.produce_initial_state()
         action = self.get_action(state)
         # Reset eligibility
@@ -164,32 +179,36 @@ class ReinforcementLearning:
         # For each step of the episode:
         end_state = False
         while not end_state:
-            # 1. Do action a from state s:
+            # Do action a from state s:
             reward = self.sim_world.update(action)
             new_state = self.sim_world.get_current_state()
             # Store state-action-pair in history
             history.append((*state, action))
-            # 2.
+            # Get a proposed action for the new state
             proposed_action = self.get_action(new_state)
-            # 3.
+            # Set the eligibility of former state and its action to 1
             self.actor.set_state_action_eligibility((*state, action), 1)
-            # 4.
+            # Calculate TD-error and target-value. Latter not used in
+            # table-based critic.
             td_error, _ = self.critic.get_td_error(reward, state, new_state)
-            # 5.
+            # Set the critic's state eligibility to 1
             self.critic.set_state_eligibility(state, 1)
-            # 6.
+            # Update eligibilities and state-action values for each
+            # state-action-pair so far in the episode.
             for state_action_pair in history:
+                # Fetch a state and action from the state-action-pair
                 state = state_action_pair[:-1]
                 action = state_action_pair[-1]
+                # Update eligibilities and values for critic and actor
                 self.critic.update_state_value(state, td_error)
                 self.critic.update_state_eligibility(state)
                 self.actor.update_state_action_value(state_action_pair,
                                                      td_error)
                 self.actor.update_state_action_eligibility(state_action_pair)
-            # 7.
+            # Update the current state and action
             state = new_state
             action = proposed_action
-            # 8. Check if state is final or failed state
+            # Check if state is final or failed state
             if (self.sim_world.is_current_state_failed_state()
                     or self.sim_world.is_current_state_final_state()):
                 end_state = True
@@ -198,6 +217,9 @@ class ReinforcementLearning:
         """
         Returns an action given a state by consulting the actor
         """
+        # In an epsilon-greedy strategy, do a purely random action if
+        # a generated random number in the range (0, 1) is less than epsilon.
+        # Otherwise pick the action that yields the greates policy value.
         do_argmax = random.random() > self.epsilon
         possible_actions = self.sim_world.get_legal_actions(state)
         return self.actor.get_proposed_action(do_argmax, state,

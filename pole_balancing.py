@@ -71,16 +71,17 @@ class PoleBalancing:
         # Update state values with the newly updated ones
         if not self.balancing_failed:
             if np.abs(self.angle) >= self.max_angle:
+                # If pole is outside allowed range
                 self.balancing_failed = True
         if not self.cart_exited:
             if np.abs(self.x_pos) >= self.max_x_pos:
+                # If cart is outside allowed range
                 self.cart_exited = True
         if self.is_current_state_failed_state():
+            # Give negative reward if agent fails
             return -1000
-        # reward = 1 + (self.max_angle - abs(self.angle)) * 10 + (
-        #     self.max_x_pos - abs(self.x_pos)) * 1
-        reward = 1
-        return reward
+        # Give positive reward if agent does not fail in current step
+        return 1
 
     def get_child_state(self, action: bool, rounded=False):
         """
@@ -126,7 +127,8 @@ class PoleBalancing:
 
     def get_current_state(self):
         """
-        Returns the current state of the sim world.
+        Returns the one-hot-encoded representation of the
+        current state of the sim world.
         """
         return PoleBalancing.round_state(
             (self.x_pos, self.x_vel, self.angle, self.angle_vel))
@@ -203,14 +205,10 @@ class PoleBalancing:
         Rounds the state variables and returns the result
         state = x_pos, x_vel, angle, angle_vel
         """
-        # return (round(state[0], 1), round(state[1],
-        #                                   1), round(state[2],
-        #                                             2), round(state[3], 1))
+        # Round values and one-hot-encode them
         state_oh = PoleBalancing.one_hot_state(
             (np.sign(state[0]), round(state[1]), np.sign(state[2]),
              round(state[3])))
-        # return (np.sign(state[0]), round(state[1]), np.sign(state[2]),
-        #         round(state[3]))
         return tuple(state_oh)
 
     @staticmethod
@@ -218,6 +216,8 @@ class PoleBalancing:
         """
         Returns the one-hot encoding of the state representatinon given.
         """
+        # Get one-hot-encoded vectors for each state variable.
+        # Second parameter is maximum absolute value of that variable.
         x_pos_oh = PoleBalancing.one_hot_variable(rounded_state[0], 1)
         x_vel_oh = PoleBalancing.one_hot_variable(rounded_state[1], 3)
         angle_oh = PoleBalancing.one_hot_variable(rounded_state[2], 1)
@@ -236,11 +236,3 @@ class PoleBalancing:
                 return vector
         vector[-1] = 1
         return vector
-
-
-if __name__ == "__main__":
-    # pole = PoleBalancing()
-    # for _ in range(10):
-    #     pole.update(False)
-    #     print(str(pole))
-    print(PoleBalancing.one_hot_variable(2, 1))

@@ -26,11 +26,17 @@ class Critic:
         self.lrate = lrate
         self.drate = drate
         self.trace_decay = trace_decay
+
+        # Initiate the dimensions of the neural network
         self.nn_dims = nn_dims
         if self.nn_dims is None:
             self.nn_dims = [50, 1]
+
+        # Seed the RNG if seed is specified
         if seed is not None:
             ks.utils.set_random_seed(seed)
+
+        # Initiate the neural network if the critic is not table-based
         if not table_critic:
             self.init_neural_network()
 
@@ -38,13 +44,15 @@ class Critic:
         """
         Initializes the neural network.
         """
-        opt = ks.optimizers.Adam
-        model = ks.models.Sequential()
+        opt = ks.optimizers.Adam  # NN optimizer
+        model = ks.models.Sequential()  # Init base model
+
+        # Populate layers
         for nodes in self.nn_dims[:-1]:
             model.add(ks.layers.Dense(nodes, activation='tanh'))
-        # model.add(ks.layers.Dense(50, activation='tanh'))
-        model.add(ks.layers.Dense(self.nn_dims[-1]))
+        model.add(ks.layers.Dense(self.nn_dims[-1]))  # Output layer
         model.compile(optimizer=opt(learning_rate=self.lrate), loss='mse')
+        # Store model reference
         self.state_value_nn = model
 
     def get_td_error(self, reward, state, new_state):
@@ -58,6 +66,7 @@ class Critic:
         """
         Returns the value of a given state.
         """
+        # Use table or neural net depending on config parameter
         if self.table_critic:
             return self.state_value[state]
         return self.state_value_nn(np.array(state).reshape((1, -1)))[0, 0]
@@ -88,20 +97,25 @@ class Critic:
 
     def update_state_value(self, state, td_error):
         """
+        Only for table based critic:
         Update the state evaluation given the current state and td_error.
         """
+        # Calculates the new state-value
         new_state_value = self.get_state_value(
             state) + self.lrate * td_error * self.get_state_eligibility(state)
+        # Stores it in the table
         self.set_state_value(state, new_state_value)
 
     def update_state_values(self, states, targets):
         """
+        Only for NN based critic:
         Update the state evaluations given a list of states and td_error.
         """
         self.state_value_nn.fit(states, targets, epochs=10, verbose=0)
 
     def update_state_eligibility(self, state):
         """
+        Only for table based critic:
         Update the state eligibility given the current state.
         """
         if self.table_critic:

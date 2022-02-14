@@ -51,19 +51,23 @@ class Actor:
         Updates the state action evaluation given a state action pair
         and td_error.
         """
+        # Calculate the new policy value
         new_state_action_value = self.get_state_action_value(
             state_action_pair
         ) + self.lrate * td_error * self.get_state_action_eligibility(
             state_action_pair)
+        # Store it in the policy table
         self.set_state_action_value(state_action_pair, new_state_action_value)
 
     def update_state_action_eligibility(self, state_action_pair):
         """
         Updates the state action eligibility given a state action pair.
         """
+        # Calculate the new eligibility value
         new_state_action_eligibility = (
             self.drate * self.trace_decay *
             self.get_state_action_eligibility(state_action_pair))
+        # Store it in the eligibility table
         self.set_state_action_eligibility(state_action_pair,
                                           new_state_action_eligibility)
 
@@ -76,8 +80,7 @@ class Actor:
         if not do_argmax:
             # Return random action
             return random.choice(possible_actions)
-        # best_action = possible_actions[0]
-        # best_state_action_value = self.actor.get_state_action_value((*state, best_action))
+        # Else, return the action with the best policy value
         best_action = []
         best_state_action_value = float('-inf')
         for action in possible_actions:

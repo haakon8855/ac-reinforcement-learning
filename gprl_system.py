@@ -3,8 +3,6 @@
 import json
 from matplotlib import pyplot as plt
 import numpy as np
-# import cProfile, pstats
-# import io
 
 from configuration import Config
 from reinforcement_learning import ReinforcementLearning
@@ -19,6 +17,7 @@ class GPRLSystem:
     """
 
     def __init__(self, config_file: str):
+        # Fetching configuration parameters from given config file
         self.config = Config.get_config(config_file)
         conf_globals = self.config['GLOBALS']
         self.problem = conf_globals['problem']
@@ -31,14 +30,19 @@ class GPRLSystem:
         self.trace_decay = float(conf_globals['trace_decay'])
         self.drate = float(conf_globals['drate'])
         self.verbose = conf_globals['verbose'] == 'true'
+
+        # If a seed is specified in the config, we will set the random seed
         self.seed = None
         if 'seed' in conf_globals:
             self.seed = int(conf_globals['seed'])
 
+        # If the critic is neural-network-based, we fetch the network's shape
         self.network_dimensions = None
         if not self.table_critic:
             self.network_dimensions = json.loads(conf_globals['nn_dims'])
 
+        # Fetch parameters specific to the cartpole problem and create
+        # an instance of the simworld.
         if self.problem == 'cartpole':
             self.length = float(conf_globals['length'])
             self.mass_p = float(conf_globals['pole_mass'])
@@ -46,6 +50,8 @@ class GPRLSystem:
             self.tau = float(conf_globals['timestep'])
             self.sim_world = PoleBalancing(self.length, self.mass_p,
                                            self.gravity, self.tau)
+        # Fetch parameters specific to the ToH problem and create
+        # an instance of the simworld.
         elif self.problem == 'hanoi':
             num_pegs = int(conf_globals['num_pegs'])
             num_discs = int(conf_globals['num_discs'])
@@ -55,16 +61,21 @@ class GPRLSystem:
             self.sim_world = Hanoi(num_pegs=num_pegs,
                                    num_discs=num_discs,
                                    animation_delay=anim_delay)
+        # Fetch parameters specific to the gambler problem and create
+        # an instance of the simworld.
         elif self.problem == 'gambler':
             win_prob = float(conf_globals['win_prob'])
             self.sim_world = Gambler(win_prob=win_prob)
 
+        # Create the reinforcement learner instance, passing necessary params
         self.reinforcement_learner = ReinforcementLearning(
             self.sim_world, self.episodes, self.max_steps, self.table_critic,
             self.epsilon, self.actor_lrate, self.critic_lrate,
             self.trace_decay, self.drate, self.verbose, self.seed,
             self.network_dimensions)
 
+        # Run visualization of the gambler policy before training if current
+        # run solves the gambler problem.
         if self.problem == 'gambler':
             self.before = True
             self.visualize_gambler_policy()
@@ -74,6 +85,8 @@ class GPRLSystem:
         Runs the reinforcement learning system on the specified problem/simworld
         """
         self.reinforcement_learner.train()
+        # Run visualization of the gambler policy after training if current
+        # run solves the gambler problem.
         if self.problem == 'gambler':
             self.visualize_gambler_policy()
 
@@ -102,23 +115,14 @@ def main():
     """
     Main function for running this python script.
     """
-    # profiler = cProfile.Profile()
-    # profiler.enable()
 
-    # gprl = GPRLSystem("configs/config_pole.ini")
+    gprl = GPRLSystem("configs/config_pole.ini")
     # gprl = GPRLSystem("configs/config_hanoi.ini")
     # gprl = GPRLSystem("configs/config_gambler.ini")
     # gprl = GPRLSystem("configs/config_pole_nn.ini")
-    gprl = GPRLSystem("configs/config_hanoi_nn.ini")
+    # gprl = GPRLSystem("configs/config_hanoi_nn.ini")
     # gprl = GPRLSystem("configs/config_gambler_nn.ini")
     gprl.run()
-
-    # profiler.disable()
-    # s = io.StringIO()
-    # ps = pstats.Stats(profiler, stream=s).sort_stats('tottime')
-    # ps.print_stats()
-    # with open('test.txt', 'w+') as f:
-    #     f.write(s.getvalue())
 
 
 if __name__ == "__main__":

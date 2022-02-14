@@ -31,6 +31,7 @@ class Hanoi:
         Populates the list of all possible moves. (Disregarding state and
         illegal moves.)
         """
+        # All combinations of movement from peg i to j, where i != j
         for i in range(self.num_pegs):
             for j in range(self.num_pegs):
                 if i != j:
@@ -57,8 +58,11 @@ class Hanoi:
 
         if not self.action_is_legal(action):
             raise Exception("Illegal action")
+
+        # Transition to next state given an action
         self.state = self.get_child_state(action)
 
+        # Store state for animation
         self.history.append(self.state.copy())
 
         # Update state values with the newly updated ones
@@ -66,7 +70,7 @@ class Hanoi:
             if self.current_step >= self.max_steps:
                 self.failed = True
 
-        # Return reward
+        # Reward is -1 as long as the goal is not reached
         return -1
 
     def get_child_state(self, action: int):
@@ -84,10 +88,10 @@ class Hanoi:
 
     def get_current_state(self):
         """
-        Returns the current state of the sim world.
+        Returns the current state of the sim world as a concatenation of
+        one-hot-encoded vectors.
         """
         oh_state = Hanoi.one_hot_state(self.state, self.num_pegs)
-        # return (*self.state, )
         return tuple(oh_state)
 
     def is_current_state_final_state(self):
@@ -124,6 +128,13 @@ class Hanoi:
         """
         Returns whether the given action is legal to perform or not from the
         current state.
+        
+        self.state = [a, b, c]
+        action = (d, e)
+        Action 'action' is legal if value of 'd' is encountered before value
+        of 'e' when iterating backwards through 'self.state'.
+        E.g. if c == e, action is not allowed, but if c != d != e and b == c,
+        action is legal.
         """
         for i in range(len(self.state) - 1, -1, -1):
             if self.state[i] == self.possible_actions[action][1]:
@@ -144,10 +155,13 @@ class Hanoi:
         pegs and discs.
         """
         _, axis = plt.subplots()
+        # Set axis ranges
         axis.set_xlim((0, self.num_pegs * 10))
         axis.set_ylim((0, self.num_discs * 10))
+        # Initiate variables keeping track of where to place discs
         heights = [0] * self.num_pegs
         pole_top = [0] * self.num_pegs
+        # Place each disc on top of the one underneath it in its stack
         for disc, pos in enumerate(state):
             radius = self.num_discs - disc
             y_position = pole_top[pos] + radius
@@ -157,6 +171,8 @@ class Hanoi:
             circle = plt.Circle(disc_position, radius=radius)
             axis.add_patch(circle)
         plt.title(f"Step {step}")
+        # To animate, block=False and plt.pause is used
+        # before closing the window.
         plt.show(block=False)
         plt.pause(self.animation_delay)
         plt.close()

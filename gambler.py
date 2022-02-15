@@ -9,7 +9,7 @@ class Gambler:
     Gambler class for holding the simulated world of the gambler.
     """
 
-    def __init__(self, win_prob=0.4):
+    def __init__(self, win_prob=0.4, max_steps=300):
         # Constants:
         self.max_coins = 100
         self.min_bet = 1
@@ -18,7 +18,7 @@ class Gambler:
         self.state = 0
         self.win_prob = win_prob
         self.current_step = 0
-        self.max_steps = 300
+        self.max_steps = max_steps
         self.failed = False
         self.history = []
         self.historic_game_length = []
@@ -133,8 +133,8 @@ class Gambler:
         """
         Plots the course of the current game up until current state.
         """
-        plt.plot(self.best_history)
-        plt.show()
+        # plt.plot(self.best_history)
+        # plt.show()
 
     def plot_historic_game_length(self):
         """

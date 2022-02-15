@@ -48,8 +48,11 @@ class GPRLSystem:
             self.mass_p = float(conf_globals['pole_mass'])
             self.gravity = float(conf_globals['gravity'])
             self.tau = float(conf_globals['timestep'])
-            self.sim_world = PoleBalancing(self.length, self.mass_p,
-                                           self.gravity, self.tau)
+            self.sim_world = PoleBalancing(self.length,
+                                           self.mass_p,
+                                           self.gravity,
+                                           self.tau,
+                                           max_steps=self.max_steps)
         # Fetch parameters specific to the ToH problem and create
         # an instance of the simworld.
         elif self.problem == 'hanoi':
@@ -60,7 +63,8 @@ class GPRLSystem:
                 anim_delay = float(conf_globals['anim_delay'])
             self.sim_world = Hanoi(num_pegs=num_pegs,
                                    num_discs=num_discs,
-                                   animation_delay=anim_delay)
+                                   animation_delay=anim_delay,
+                                   max_steps=self.max_steps)
         # Fetch parameters specific to the gambler problem and create
         # an instance of the simworld.
         elif self.problem == 'gambler':
@@ -116,8 +120,8 @@ def main():
     Main function for running this python script.
     """
 
-    gprl = GPRLSystem("configs/config_pole.ini")
-    # gprl = GPRLSystem("configs/config_hanoi.ini")
+    # gprl = GPRLSystem("configs/config_pole.ini")
+    gprl = GPRLSystem("configs/config_hanoi.ini")
     # gprl = GPRLSystem("configs/config_gambler.ini")
     # gprl = GPRLSystem("configs/config_pole_nn.ini")
     # gprl = GPRLSystem("configs/config_hanoi_nn.ini")

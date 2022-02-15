@@ -11,7 +11,12 @@ class PoleBalancing:
     on a cart.
     """
 
-    def __init__(self, length=0.5, mass_p=0.1, gravity=-9.8, tau=0.02):
+    def __init__(self,
+                 length=0.5,
+                 mass_p=0.1,
+                 gravity=-9.8,
+                 tau=0.02,
+                 max_steps=300):
         # Constants:
         self.length = length  # m
         self.mass_p = mass_p  # kg
@@ -21,7 +26,7 @@ class PoleBalancing:
         self.force = 10  # N
         self.max_angle = 0.21  # radians
         self.max_x_pos = 2.4  # m
-        self.steps = 300  # num of timesteps in episode
+        self.steps = max_steps  # num of timesteps in episode
         # State parameters:
         self.angle = 0
         self.angle_vel = 0

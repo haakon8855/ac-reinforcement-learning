@@ -8,7 +8,11 @@ class Hanoi:
     Hanoi class for holding the simulated world of 'Towers of Hanoi'.
     """
 
-    def __init__(self, num_pegs=3, num_discs=3, animation_delay=0.5):
+    def __init__(self,
+                 num_pegs=3,
+                 num_discs=3,
+                 animation_delay=0.5,
+                 max_steps=300):
         # Constants:
         self.num_pegs = num_pegs
         self.num_discs = num_discs
@@ -16,7 +20,7 @@ class Hanoi:
         # State parameters:
         self.state = [0 for _ in range(num_discs)]
         self.current_step = 0
-        self.max_steps = 300
+        self.max_steps = max_steps
         self.failed = False
         self.history = []
         self.best_history = []

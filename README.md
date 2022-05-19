@@ -1,4 +1,6 @@
-# General Purpose Reinforcement Learning using Actor-Critic
+# General Purpose Reinforcement Learning using <br/>the Actor-Critic model
+
+## Overview
 
 General Purpose Reinforcement Learning library for solving a wide range of problems. This Reinforcement Learning system is implemented using the Actor-Critic model. The Actor uses a policy to perform actions, while the Critic uses the performed actions train the Actor's policy. This lets the Actor train its policy over time, and make better decisions as it learns to solve a problem.
 

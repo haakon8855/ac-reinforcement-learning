@@ -18,7 +18,7 @@ For testing the system's learning capabilities, three toy problems are implement
 
 The Pole Balancing problem, also known as the [Inverted Pendulum](https://en.wikipedia.org/wiki/Inverted_pendulum), consists of a pole balancing on top of a cart. The cart can roll freely and the pole can rotate freely around the point at which it is resting on the cart. Due to gravity, the pole will fall, and the goal is to keep the pole balanced by only pushing the cart left or right.
 
-![Diagram describing the Actor-Critic RL system](diagrams/cartpole.png)
+![Diagram showing the Pole Balancing problem](diagrams/cartpole.png)
 
 ### Towers of Hanoi
 
